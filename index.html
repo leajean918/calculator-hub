@@ -16,6 +16,9 @@
     --accent1: #4f8ef7;
     --accent2: #a78bfa;
     --accent3: #34d399;
+    --accent4: #f59e0b;
+    --accent5: #fb923c;
+    --accent6: #e879f9;
     --text: #f0f2ff;
     --muted: #8892aa;
     --border: #2e3347;
@@ -104,6 +107,9 @@
   .card.blue::before { background: linear-gradient(90deg, var(--accent1), #7eb8ff); }
   .card.purple::before { background: linear-gradient(90deg, var(--accent2), #c4b5fd); }
   .card.green::before { background: linear-gradient(90deg, var(--accent3), #6ee7b7); }
+  .card.amber::before { background: linear-gradient(90deg, var(--accent4), #fcd34d); }
+  .card.orange::before { background: linear-gradient(90deg, var(--accent5), #fdba74); }
+  .card.pink::before { background: linear-gradient(90deg, var(--accent6), #f0abfc); }
 
   .card:hover {
     transform: translateY(-4px);
@@ -113,6 +119,9 @@
   .card.blue:hover { border-color: var(--accent1); }
   .card.purple:hover { border-color: var(--accent2); }
   .card.green:hover { border-color: var(--accent3); }
+  .card.amber:hover { border-color: var(--accent4); }
+  .card.orange:hover { border-color: var(--accent5); }
+  .card.pink:hover { border-color: var(--accent6); }
 
   .card-icon {
     font-size: 36px;
@@ -144,6 +153,9 @@
   .card.blue .card-tag { background: rgba(79,142,247,0.15); color: var(--accent1); }
   .card.purple .card-tag { background: rgba(167,139,250,0.15); color: var(--accent2); }
   .card.green .card-tag { background: rgba(52,211,153,0.15); color: var(--accent3); }
+  .card.amber .card-tag { background: rgba(245,158,11,0.15); color: var(--accent4); }
+  .card.orange .card-tag { background: rgba(251,146,60,0.15); color: var(--accent5); }
+  .card.pink .card-tag { background: rgba(232,121,249,0.15); color: var(--accent6); }
 
   .card-arrow {
     position: absolute;
@@ -169,7 +181,7 @@
 <header>
   <div class="logo">✦ Calculator Hub</div>
   <h1>내 돈, 제대로<br><span>계산해보자</span></h1>
-  <p>연봉 실수령액부터 퇴직금, 국민연금까지<br>복잡한 계산 한 번에 끝내세요</p>
+  <p>연봉·퇴직금·대출·세금까지<br>복잡한 계산 한 번에 끝내세요</p>
 </header>
 
 <div class="grid">
@@ -194,6 +206,30 @@
     <h2>국민연금 수령액 계산기</h2>
     <p>납부 기간과 평균 소득으로 노후에 받을 예상 국민연금 수령액을 확인하세요.</p>
     <span class="card-tag">노후 준비</span>
+    <span class="card-arrow">→</span>
+  </a>
+
+  <a class="card amber" href="loan.html">
+    <span class="card-icon">🏠</span>
+    <h2>대출 이자 계산기</h2>
+    <p>대출금액·금리·기간을 입력하면 월 상환액과 총 이자를 계산합니다. 원리금균등·원금균등 모두 지원.</p>
+    <span class="card-tag">내 집 마련 필수</span>
+    <span class="card-arrow">→</span>
+  </a>
+
+  <a class="card orange" href="unemployment.html">
+    <span class="card-icon">📋</span>
+    <h2>실업급여 계산기</h2>
+    <p>퇴직 전 월급여와 고용보험 가입기간으로 실업급여 예상 수령액과 수급기간을 계산합니다.</p>
+    <span class="card-tag">퇴직 전 확인</span>
+    <span class="card-arrow">→</span>
+  </a>
+
+  <a class="card pink" href="tax.html">
+    <span class="card-icon">🏛️</span>
+    <h2>증여세·상속세 계산기</h2>
+    <p>증여·상속 금액과 관계를 입력하면 예상 세금과 공제액을 계산합니다. 세율표 포함.</p>
+    <span class="card-tag">절세 필수 확인</span>
     <span class="card-arrow">→</span>
   </a>
 </div>
