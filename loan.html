@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>대출 이자 계산기 | 월 상환액·총 이자 계산</title>
+<meta name="description" content="대출금액, 금리, 기간을 입력하면 월 상환액과 총 이자를 계산합니다. 원리금균등·원금균등 방식 모두 지원.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg: #0f1117; --card: #1a1d27; --border: #2e3347; --accent: #f59e0b; --text: #f0f2ff; --muted: #8892aa; --red: #f87171; --green: #34d399; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 30px 16px 60px; }
+
+  .back { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; text-decoration: none; margin-bottom: 24px; transition: color 0.2s; }
+  .back:hover { color: var(--accent); }
+  .wrap { max-width: 520px; margin: 0 auto; }
+  h1 { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
+  h1 span { color: var(--accent); }
+  .sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+
+  .tab-wrap { display: flex; border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+  .tab-btn { flex: 1; padding: 12px 0; font-size: 13px; font-weight: 700; border: none; background: var(--card); color: var(--muted); cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all 0.2s; }
+  .tab-btn.active { background: var(--accent); color: #000; }
+  .tab-btn:first-child { border-right: 1.5px solid var(--border); }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 22px; margin-bottom: 14px; }
+  label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+  .input-row { display: flex; align-items: center; gap: 0; }
+  input[type=number] { flex: 1; background: #0f1117; border: 1.5px solid var(--border); border-radius: 10px 0 0 10px; color: var(--text); font-size: 16px; font-weight: 500; padding: 11px 14px; font-family: 'Noto Sans KR', sans-serif; outline: none; transition: border-color 0.2s; }
+  input[type=number]:focus { border-color: var(--accent); }
+  .unit { background: #1e2235; border: 1.5px solid var(--border); border-left: none; border-radius: 0 10px 10px 0; padding: 11px 14px; font-size: 13px; color: var(--muted); white-space: nowrap; }
+  input[type=range] { width: 100%; -webkit-appearance: none; height: 4px; border-radius: 99px; background: var(--border); margin-top: 10px; cursor: pointer; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+  .range-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 5px; }
+
+  /* 결과 */
+  .result-main { background: linear-gradient(135deg, #2a1f0a, #1a1d27); border: 1px solid rgba(245,158,11,0.3); border-radius: 18px; padding: 24px; margin-bottom: 14px; }
+  .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+  .rg-box { text-align: center; }
+  .rg-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .rg-val { font-size: 22px; font-weight: 900; }
+  .rg-val.amber { color: var(--accent); }
+  .rg-val.red { color: var(--red); }
+
+  /* 상환 요약 */
+  .summary { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 20px 24px; margin-bottom: 14px; }
+  .summary h3 { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 14px; }
+  .row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .row:last-child { border-bottom: none; }
+  .row .lbl { color: var(--muted); }
+  .row .val { font-weight: 700; }
+  .row.total .lbl { color: var(--text); font-weight: 700; }
+  .row.total .val { color: var(--accent); font-size: 16px; }
+
+  /* 진행 바 */
+  .bar-wrap { margin-top: 16px; }
+  .bar-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .bar-bg { height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--green), var(--accent), var(--red)); transition: width 0.4s; }
+
+  .notice { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.7; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 계산기 목록으로</a>
+  <h1>🏦 <span>대출 이자</span> 계산기</h1>
+  <p class="sub">대출금액·금리·기간을 입력하면 월 상환액과 총 이자를 계산합니다</p>
+
+  <div class="tab-wrap">
+    <button class="tab-btn active" onclick="switchTab('equal')">원리금균등 상환</button>
+    <button class="tab-btn" onclick="switchTab('principal')">원금균등 상환</button>
+  </div>
+
+  <div class="card">
+    <label>대출금액</label>
+    <div class="input-row">
+      <input type="number" id="loan" placeholder="예: 300000000" oninput="calc()">
+      <span class="unit">원</span>
+    </div>
+    <input type="range" id="loanSlider" min="10000000" max="1000000000" step="5000000" value="300000000" oninput="syncLoan(this.value)">
+    <div class="range-labels"><span>1,000만</span><span>5억</span><span>10억</span></div>
+  </div>
+
+  <div class="card">
+    <label>연 금리 (%)</label>
+    <div class="input-row">
+      <input type="number" id="rate" placeholder="예: 4.5" step="0.1" oninput="calc()">
+      <span class="unit">%</span>
+    </div>
+    <input type="range" id="rateSlider" min="1" max="20" step="0.1" value="4.5" oninput="syncRate(this.value)">
+    <div class="range-labels"><span>1%</span><span>10%</span><span>20%</span></div>
+  </div>
+
+  <div class="card">
+    <label>대출 기간</label>
+    <div class="input-row">
+      <input type="number" id="term" placeholder="예: 30" oninput="calc()">
+      <span class="unit">년</span>
+    </div>
+    <input type="range" id="termSlider" min="1" max="40" step="1" value="30" oninput="syncTerm(this.value)">
+    <div class="range-labels"><span>1년</span><span>20년</span><span>40년</span></div>
+  </div>
+
+  <div class="result-main">
+    <div class="result-grid">
+      <div class="rg-box">
+        <div class="rg-label" id="monthly-label">월 상환액</div>
+        <div class="rg-val amber" id="monthly-pay">— 원</div>
+      </div>
+      <div class="rg-box">
+        <div class="rg-label">총 이자</div>
+        <div class="rg-val red" id="total-interest">— 원</div>
+      </div>
+    </div>
+    <div class="bar-wrap">
+      <div class="bar-label">
+        <span style="color:var(--green)">원금</span>
+        <span id="bar-pct">—</span>
+        <span style="color:var(--red)">이자</span>
+      </div>
+      <div class="bar-bg"><div class="bar-fill" id="bar-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="summary">
+    <h3>상환 요약</h3>
+    <div class="row"><span class="lbl">대출 원금</span><span class="val" id="s-principal">—</span></div>
+    <div class="row"><span class="lbl">총 납입 이자</span><span class="val" style="color:var(--red)" id="s-interest">—</span></div>
+    <div class="row total"><span class="lbl">총 상환금액</span><span class="val" id="s-total">—</span></div>
+  </div>
+
+  <p class="notice">※ 실제 대출 조건(우대금리, 중도상환수수료 등)에 따라 차이가 있을 수 있습니다.</p>
+</div>
+
+<script>
+let mode = 'equal';
+function switchTab(m) {
+  mode = m;
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (m==='equal'&&i===0)||(m==='principal'&&i===1)));
+  document.getElementById('monthly-label').textContent = m === 'equal' ? '월 상환액' : '첫 달 상환액';
+  calc();
+}
+function fmt(n) { return Math.round(n).toLocaleString('ko-KR') + ' 원'; }
+function syncLoan(v) { document.getElementById('loan').value = v; calc(); }
+function syncRate(v) { document.getElementById('rate').value = v; calc(); }
+function syncTerm(v) { document.getElementById('term').value = v; calc(); }
+
+function calc() {
+  const loan = parseFloat(document.getElementById('loan').value) || 0;
+  const rate = parseFloat(document.getElementById('rate').value) || 0;
+  const term = parseFloat(document.getElementById('term').value) || 0;
+  document.getElementById('loanSlider').value = Math.min(Math.max(loan,10000000),1000000000);
+  document.getElementById('rateSlider').value = Math.min(Math.max(rate,1),20);
+  document.getElementById('termSlider').value = Math.min(Math.max(term,1),40);
+
+  if (!loan || !rate || !term) {
+    ['monthly-pay','total-interest','s-principal','s-interest','s-total'].forEach(id => document.getElementById(id).textContent = '—');
+    document.getElementById('bar-pct').textContent = '—';
+    document.getElementById('bar-fill').style.width = '0%';
+    return;
+  }
+
+  const r = rate / 100 / 12;
+  const n = term * 12;
+  let monthly, totalInterest;
+
+  if (mode === 'equal') {
+    // 원리금균등
+    monthly = loan * r * Math.pow(1+r, n) / (Math.pow(1+r, n) - 1);
+    totalInterest = monthly * n - loan;
+  } else {
+    // 원금균등 - 첫 달
+    const principalPart = loan / n;
+    monthly = principalPart + loan * r;
+    totalInterest = 0;
+    let balance = loan;
+    for (let i = 0; i < n; i++) {
+      totalInterest += balance * r;
+      balance -= principalPart;
+    }
+  }
+
+  const totalPay = loan + totalInterest;
+  const pct = Math.round((loan / totalPay) * 100);
+
+  document.getElementById('monthly-pay').textContent = fmt(monthly);
+  document.getElementById('total-interest').textContent = fmt(totalInterest);
+  document.getElementById('s-principal').textContent = fmt(loan);
+  document.getElementById('s-interest').textContent = fmt(totalInterest);
+  document.getElementById('s-total').textContent = fmt(totalPay);
+  document.getElementById('bar-pct').textContent = `원금 ${pct}% / 이자 ${100-pct}%`;
+  document.getElementById('bar-fill').style.width = pct + '%';
+}
+
+// 초기값
+document.getElementById('loan').value = 300000000;
+document.getElementById('rate').value = 4.5;
+document.getElementById('term').value = 30;
+calc();
+</script>
+</body>
+</html>

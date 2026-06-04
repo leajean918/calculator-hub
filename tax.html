@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>증여세·상속세 계산기 | 예상 세금 간편 계산</title>
+<meta name="description" content="증여금액과 관계(부모·자녀·배우자 등)를 입력하면 예상 증여세를 계산합니다. 상속세도 계산 가능.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg: #0f1117; --card: #1a1d27; --border: #2e3347; --accent: #e879f9; --text: #f0f2ff; --muted: #8892aa; --red: #f87171; --green: #34d399; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 30px 16px 60px; }
+  .back { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; text-decoration: none; margin-bottom: 24px; transition: color 0.2s; }
+  .back:hover { color: var(--accent); }
+  .wrap { max-width: 520px; margin: 0 auto; }
+  h1 { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
+  h1 span { color: var(--accent); }
+  .sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+
+  .tab-wrap { display: flex; border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+  .tab-btn { flex: 1; padding: 12px 0; font-size: 13px; font-weight: 700; border: none; background: var(--card); color: var(--muted); cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all 0.2s; }
+  .tab-btn.active { background: var(--accent); color: #fff; }
+  .tab-btn:first-child { border-right: 1.5px solid var(--border); }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 22px; margin-bottom: 14px; }
+  label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+  .input-row { display: flex; align-items: center; }
+  input[type=number] { flex: 1; background: #0f1117; border: 1.5px solid var(--border); border-radius: 10px 0 0 10px; color: var(--text); font-size: 16px; font-weight: 500; padding: 11px 14px; font-family: 'Noto Sans KR', sans-serif; outline: none; transition: border-color 0.2s; }
+  input[type=number]:focus { border-color: var(--accent); }
+  .unit { background: #1e2235; border: 1.5px solid var(--border); border-left: none; border-radius: 0 10px 10px 0; padding: 11px 14px; font-size: 13px; color: var(--muted); }
+  select { width: 100%; background: #0f1117; border: 1.5px solid var(--border); border-radius: 10px; color: var(--text); font-size: 15px; padding: 11px 14px; font-family: 'Noto Sans KR', sans-serif; outline: none; cursor: pointer; transition: border-color 0.2s; }
+  select:focus { border-color: var(--accent); }
+
+  .deduction-box { background: rgba(232,121,249,0.08); border: 1px solid rgba(232,121,249,0.2); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; font-size: 13px; color: var(--accent); line-height: 1.8; }
+  .deduction-box strong { font-weight: 700; }
+
+  .result-main { background: linear-gradient(135deg, #2a0a2a, #1a1d27); border: 1px solid rgba(232,121,249,0.3); border-radius: 18px; padding: 24px; margin-bottom: 14px; text-align: center; }
+  .result-label { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .result-amount { font-size: 38px; font-weight: 900; color: var(--accent); letter-spacing: -1px; }
+  .result-sub { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+  .summary { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 20px 24px; margin-bottom: 14px; }
+  .summary h3 { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 14px; }
+  .row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .row:last-child { border-bottom: none; }
+  .row .lbl { color: var(--muted); }
+  .row .val { font-weight: 700; }
+  .row.total .lbl { color: var(--text); font-weight: 700; }
+  .row.total .val { color: var(--accent); font-size: 16px; }
+
+  /* 세율표 */
+  .rate-table { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 20px 24px; margin-bottom: 14px; }
+  .rate-table h3 { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { color: var(--muted); font-weight: 700; padding: 6px 8px; text-align: left; border-bottom: 1px solid var(--border); }
+  td { padding: 6px 8px; border-bottom: 1px solid var(--border); color: var(--text); }
+  tr:last-child td { border-bottom: none; }
+  tr.highlight td { color: var(--accent); font-weight: 700; }
+
+  .notice { font-size: 11px; color: var(--muted); line-height: 1.7; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 계산기 목록으로</a>
+  <h1>🏛️ <span>증여세·상속세</span> 계산기</h1>
+  <p class="sub">증여·상속 금액과 관계를 입력하면 예상 세금을 계산합니다</p>
+
+  <div class="tab-wrap">
+    <button class="tab-btn active" onclick="switchTab('gift')">증여세</button>
+    <button class="tab-btn" onclick="switchTab('inherit')">상속세</button>
+  </div>
+
+  <!-- 증여세 패널 -->
+  <div class="panel active" id="panel-gift">
+    <div class="card">
+      <label>증여 금액</label>
+      <div class="input-row">
+        <input type="number" id="gift-amount" placeholder="예: 100000000" oninput="calcGift()">
+        <span class="unit">원</span>
+      </div>
+    </div>
+    <div class="card">
+      <label>증여자와의 관계</label>
+      <select id="gift-rel" onchange="calcGift()">
+        <option value="">선택하세요</option>
+        <option value="600000000">배우자 (공제 6억원)</option>
+        <option value="50000000">직계존속 부모·조부모 (공제 5,000만원)</option>
+        <option value="50000000">직계비속 자녀·손자녀 (공제 5,000만원)</option>
+        <option value="10000000">형제자매·기타 친족 (공제 1,000만원)</option>
+        <option value="0">타인 (공제 없음)</option>
+      </select>
+    </div>
+    <div class="deduction-box" id="gift-deduction" style="display:none"></div>
+    <div class="result-main">
+      <div class="result-label">예상 증여세</div>
+      <div class="result-amount" id="gift-tax">— 원</div>
+      <div class="result-sub" id="gift-sub"></div>
+    </div>
+    <div class="summary" id="gift-summary" style="display:none">
+      <h3>계산 상세</h3>
+      <div class="row"><span class="lbl">증여 금액</span><span class="val" id="gs-amount">—</span></div>
+      <div class="row"><span class="lbl">증여재산공제</span><span class="val" style="color:var(--green)" id="gs-deduct">—</span></div>
+      <div class="row"><span class="lbl">과세표준</span><span class="val" id="gs-base">—</span></div>
+      <div class="row"><span class="lbl">적용 세율</span><span class="val" id="gs-rate">—</span></div>
+      <div class="row total"><span class="lbl">예상 증여세</span><span class="val" id="gs-tax">—</span></div>
+    </div>
+  </div>
+
+  <!-- 상속세 패널 -->
+  <div class="panel" id="panel-inherit">
+    <div class="card">
+      <label>총 상속 재산</label>
+      <div class="input-row">
+        <input type="number" id="inh-amount" placeholder="예: 500000000" oninput="calcInherit()">
+        <span class="unit">원</span>
+      </div>
+    </div>
+    <div class="card">
+      <label>상속 유형</label>
+      <select id="inh-type" onchange="calcInherit()">
+        <option value="">선택하세요</option>
+        <option value="spouse_child">배우자 + 자녀 있음 (공제 최소 10억)</option>
+        <option value="child_only">자녀만 있음 (공제 5억)</option>
+        <option value="other">기타 (공제 2억)</option>
+      </select>
+    </div>
+    <div class="deduction-box" id="inh-deduction" style="display:none"></div>
+    <div class="result-main">
+      <div class="result-label">예상 상속세</div>
+      <div class="result-amount" id="inh-tax">— 원</div>
+      <div class="result-sub" id="inh-sub"></div>
+    </div>
+    <div class="summary" id="inh-summary" style="display:none">
+      <h3>계산 상세</h3>
+      <div class="row"><span class="lbl">총 상속재산</span><span class="val" id="is-amount">—</span></div>
+      <div class="row"><span class="lbl">상속공제</span><span class="val" style="color:var(--green)" id="is-deduct">—</span></div>
+      <div class="row"><span class="lbl">과세표준</span><span class="val" id="is-base">—</span></div>
+      <div class="row"><span class="lbl">적용 세율</span><span class="val" id="is-rate">—</span></div>
+      <div class="row total"><span class="lbl">예상 상속세</span><span class="val" id="is-tax">—</span></div>
+    </div>
+  </div>
+
+  <div class="rate-table">
+    <h3>증여세·상속세 세율표</h3>
+    <table>
+      <tr><th>과세표준</th><th>세율</th><th>누진공제</th></tr>
+      <tr><td>1억 이하</td><td>10%</td><td>—</td></tr>
+      <tr><td>1억 ~ 5억</td><td>20%</td><td>1,000만원</td></tr>
+      <tr><td>5억 ~ 10억</td><td>30%</td><td>6,000만원</td></tr>
+      <tr><td>10억 ~ 30억</td><td>40%</td><td>1억 6,000만원</td></tr>
+      <tr><td>30억 초과</td><td>50%</td><td>4억 6,000만원</td></tr>
+    </table>
+  </div>
+
+  <p class="notice">※ 실제 세액은 신고공제, 세액공제, 채무 등에 따라 다릅니다.<br>정확한 상담은 세무사 또는 국세청(www.nts.go.kr)을 이용하세요.</p>
+</div>
+
+<script>
+function switchTab(t) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (t==='gift'&&i===0)||(t==='inherit'&&i===1)));
+  document.getElementById('panel-gift').classList.toggle('active', t==='gift');
+  document.getElementById('panel-inherit').classList.toggle('active', t==='inherit');
+}
+
+function fmt(n) { return Math.round(n).toLocaleString('ko-KR') + ' 원'; }
+function fmtEok(n) { return (n/100000000).toFixed(1) + '억원'; }
+
+function calcTax(base) {
+  if (base <= 0) return { tax: 0, rate: 0 };
+  let tax = 0, rate = 0;
+  if (base <= 100000000) { tax = base * 0.1; rate = 10; }
+  else if (base <= 500000000) { tax = base * 0.2 - 10000000; rate = 20; }
+  else if (base <= 1000000000) { tax = base * 0.3 - 60000000; rate = 30; }
+  else if (base <= 3000000000) { tax = base * 0.4 - 160000000; rate = 40; }
+  else { tax = base * 0.5 - 460000000; rate = 50; }
+  return { tax, rate };
+}
+
+function calcGift() {
+  const amount = parseFloat(document.getElementById('gift-amount').value) || 0;
+  const deductStr = document.getElementById('gift-rel').value;
+  if (!amount || !deductStr) return;
+
+  const deduct = Math.min(parseFloat(deductStr), amount);
+  const base = Math.max(amount - deduct, 0);
+  const { tax, rate } = calcTax(base);
+
+  const relText = document.getElementById('gift-rel').options[document.getElementById('gift-rel').selectedIndex].text;
+  document.getElementById('gift-deduction').style.display = 'block';
+  document.getElementById('gift-deduction').innerHTML = `<strong>증여재산공제 적용:</strong> ${relText}<br>10년간 합산 기준으로 공제됩니다.`;
+
+  document.getElementById('gift-tax').textContent = fmt(tax);
+  document.getElementById('gift-sub').textContent = tax === 0 ? '공제 범위 내 — 세금 없음' : `과세표준 ${fmt(base)} × ${rate}%`;
+  document.getElementById('gift-summary').style.display = 'block';
+  document.getElementById('gs-amount').textContent = fmt(amount);
+  document.getElementById('gs-deduct').textContent = '- ' + fmt(deduct);
+  document.getElementById('gs-base').textContent = fmt(base);
+  document.getElementById('gs-rate').textContent = rate + '%';
+  document.getElementById('gs-tax').textContent = fmt(tax);
+}
+
+function calcInherit() {
+  const amount = parseFloat(document.getElementById('inh-amount').value) || 0;
+  const type = document.getElementById('inh-type').value;
+  if (!amount || !type) return;
+
+  const deductMap = { spouse_child: 1000000000, child_only: 500000000, other: 200000000 };
+  const deductDesc = {
+    spouse_child: '일괄공제 5억 + 배우자공제 최소 5억 = 10억',
+    child_only: '일괄공제 5억',
+    other: '기초공제 2억'
+  };
+  const deduct = Math.min(deductMap[type], amount);
+  const base = Math.max(amount - deduct, 0);
+  const { tax, rate } = calcTax(base);
+
+  document.getElementById('inh-deduction').style.display = 'block';
+  document.getElementById('inh-deduction').innerHTML = `<strong>상속공제:</strong> ${deductDesc[type]}`;
+  document.getElementById('inh-tax').textContent = fmt(tax);
+  document.getElementById('inh-sub').textContent = tax === 0 ? '공제 범위 내 — 세금 없음' : `과세표준 ${fmt(base)} × ${rate}%`;
+  document.getElementById('inh-summary').style.display = 'block';
+  document.getElementById('is-amount').textContent = fmt(amount);
+  document.getElementById('is-deduct').textContent = '- ' + fmt(deduct);
+  document.getElementById('is-base').textContent = fmt(base);
+  document.getElementById('is-rate').textContent = rate + '%';
+  document.getElementById('is-tax').textContent = fmt(tax);
+}
+</script>
+</body>
+</html>
