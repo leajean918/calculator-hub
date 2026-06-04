@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>국민연금 수령액 계산기 | 노후 예상 연금 계산</title>
+<meta name="description" content="납부 기간과 평균 소득으로 노후에 받을 예상 국민연금 수령액을 계산하세요.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg: #0f1117; --card: #1a1d27; --border: #2e3347; --accent: #34d399; --text: #f0f2ff; --muted: #8892aa; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 30px 16px 60px; }
+
+  .back { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; text-decoration: none; margin-bottom: 24px; transition: color 0.2s; }
+  .back:hover { color: var(--accent); }
+  .wrap { max-width: 500px; margin: 0 auto; }
+  h1 { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
+  h1 span { color: var(--accent); }
+  .sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 22px; margin-bottom: 14px; }
+  label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+  input[type=number] { width: 100%; background: #0f1117; border: 1.5px solid var(--border); border-radius: 10px; color: var(--text); font-size: 16px; font-weight: 500; padding: 11px 14px; font-family: 'Noto Sans KR', sans-serif; outline: none; transition: border-color 0.2s; }
+  input[type=number]:focus { border-color: var(--accent); }
+  input[type=range] { width: 100%; -webkit-appearance: none; height: 4px; border-radius: 99px; background: var(--border); margin-top: 10px; cursor: pointer; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+  .range-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+  .result-main { background: linear-gradient(135deg, #0a2a1a, #1a1d27); border: 1px solid rgba(52,211,153,0.3); border-radius: 18px; padding: 28px 24px; margin-bottom: 14px; text-align: center; }
+  .result-label { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .result-amount { font-size: 38px; font-weight: 900; color: var(--accent); letter-spacing: -1px; }
+  .result-sub { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  .info-box { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; text-align: center; }
+  .info-box .ib-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+  .info-box .ib-val { font-size: 18px; font-weight: 700; color: var(--text); }
+
+  .formula { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; margin-bottom: 14px; }
+  .formula h3 { font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 12px; }
+  .formula p { font-size: 13px; color: var(--text); line-height: 1.8; }
+  .formula code { background: rgba(52,211,153,0.1); color: var(--accent); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+
+  .notice { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.7; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 계산기 목록으로</a>
+  <h1>🏦 <span>국민연금</span> 수령액 계산기</h1>
+  <p class="sub">납부 기간과 평균 소득으로 노후에 받을<br>예상 국민연금을 확인하세요 (2024년 기준 근사치)</p>
+
+  <div class="card">
+    <label>월 평균 소득 (세전, 원)</label>
+    <input type="number" id="income" placeholder="예: 3000000" oninput="calc()">
+    <input type="range" id="slider" min="500000" max="10000000" step="100000" value="3000000" oninput="syncSlider(this.value)">
+    <div class="range-labels"><span>50만</span><span>500만</span><span>1,000만</span></div>
+  </div>
+
+  <div class="card">
+    <label>국민연금 납부 기간 (년)</label>
+    <input type="number" id="years" placeholder="예: 20" min="1" max="45" oninput="calc()">
+  </div>
+
+  <div class="result-main">
+    <div class="result-label">월 예상 수령액</div>
+    <div class="result-amount" id="monthly-pension">— 원</div>
+    <div class="result-sub" id="annual-pension"></div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-box">
+      <div class="ib-label">총 납부 보험료 (근사치)</div>
+      <div class="ib-val" id="total-paid">—</div>
+    </div>
+    <div class="info-box">
+      <div class="ib-label">납부 대비 수령 기간</div>
+      <div class="ib-val" id="breakeven">—</div>
+    </div>
+  </div>
+
+  <div class="formula">
+    <h3>계산 방식 안내</h3>
+    <p>기본 연금액 = <code>(A + B) × P(n) × 1.0</code><br>
+    A = 전체 가입자 평균소득 (약 268만원)<br>
+    B = 본인 가입기간 평균소득<br>
+    P(n) = 가입기간 계수 (20년 기준 1.0)<br>
+    <br>이 계산기는 <code>간이 추정식</code>을 사용합니다.</p>
+  </div>
+
+  <p class="notice">※ 실제 수령액은 가입 기간, 소득 이력, 수급 개시 연령에 따라 다릅니다.<br>정확한 예상액은 국민연금공단 내연금 서비스를 이용하세요.</p>
+</div>
+<script>
+function fmt(n) { return Math.round(n).toLocaleString('ko-KR') + ' 원'; }
+
+function syncSlider(v) {
+  document.getElementById('income').value = v;
+  calc();
+}
+
+function calc() {
+  const income = parseFloat(document.getElementById('income').value) || 0;
+  const years = parseFloat(document.getElementById('years').value) || 0;
+  document.getElementById('slider').value = Math.min(Math.max(income, 500000), 10000000);
+
+  if (!income || !years) {
+    document.getElementById('monthly-pension').textContent = '— 원';
+    document.getElementById('annual-pension').textContent = '';
+    document.getElementById('total-paid').textContent = '—';
+    document.getElementById('breakeven').textContent = '—';
+    return;
+  }
+
+  // 국민연금 간이 추정식
+  // 기본연금액 ≈ 1.2 × (A + B) / 2 × (n/20) × 0.9
+  const A = 2680000; // 2024년 전체가입자 평균소득 근사
+  const B = income;
+  const n = Math.min(years, 45);
+
+  // 표준 산식 근사
+  let monthly = 1.2 * ((A + B) / 2) * (n / 20) * 0.9 * (1/12) * 12;
+  monthly = monthly / 12;
+
+  // 최솟값 보정
+  if (years < 10) {
+    document.getElementById('monthly-pension').textContent = '0 원';
+    document.getElementById('annual-pension').textContent = '납부 기간 10년 미만은 수령 불가';
+    document.getElementById('total-paid').textContent = '—';
+    document.getElementById('breakeven').textContent = '—';
+    return;
+  }
+
+  const annualPension = monthly * 12;
+  // 총 납부액: 소득 × 9% × 납부월수
+  const totalPaid = income * 0.09 * years * 12;
+  // 손익분기: 총납부 / 연수령
+  const breakEvenYears = annualPension > 0 ? (totalPaid / annualPension).toFixed(1) : '—';
+
+  document.getElementById('monthly-pension').textContent = fmt(monthly);
+  document.getElementById('annual-pension').textContent = `연간 수령액 약 ${fmt(annualPension)}`;
+  document.getElementById('total-paid').textContent = Math.round(totalPaid / 10000).toLocaleString() + '만원';
+  document.getElementById('breakeven').textContent = breakEvenYears + '년';
+}
+</script>
+</body>
+</html>
