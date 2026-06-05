@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>건강보험료 계산기 | 직장·지역 건강보험료 계산</title>
+<meta name="description" content="월급여 또는 소득·재산으로 건강보험료와 장기요양보험료를 계산하세요.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg: #0f1117; --card: #1a1d27; --border: #2e3347; --accent: #2dd4bf; --text: #f0f2ff; --muted: #8892aa; --green: #34d399; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 30px 16px 60px; }
+  .back { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; text-decoration: none; margin-bottom: 24px; transition: color 0.2s; }
+  .back:hover { color: var(--accent); }
+  .wrap { max-width: 520px; margin: 0 auto; }
+  h1 { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
+  h1 span { color: var(--accent); }
+  .sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+
+  .tab-wrap { display: flex; border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+  .tab-btn { flex: 1; padding: 12px 0; font-size: 13px; font-weight: 700; border: none; background: var(--card); color: var(--muted); cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all 0.2s; }
+  .tab-btn.active { background: var(--accent); color: #000; }
+  .tab-btn:first-child { border-right: 1.5px solid var(--border); }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 22px; margin-bottom: 14px; }
+  label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+  .input-row { display: flex; align-items: center; }
+  input[type=number] { flex: 1; background: #0f1117; border: 1.5px solid var(--border); border-radius: 10px 0 0 10px; color: var(--text); font-size: 16px; font-weight: 500; padding: 11px 14px; font-family: 'Noto Sans KR', sans-serif; outline: none; transition: border-color 0.2s; }
+  input[type=number]:focus { border-color: var(--accent); }
+  .unit { background: #1e2235; border: 1.5px solid var(--border); border-left: none; border-radius: 0 10px 10px 0; padding: 11px 14px; font-size: 13px; color: var(--muted); white-space: nowrap; }
+
+  .result-main { background: linear-gradient(135deg, #0a2a28, #1a1d27); border: 1px solid rgba(45,212,191,0.3); border-radius: 18px; padding: 24px; margin-bottom: 14px; text-align: center; }
+  .result-label { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .result-amount { font-size: 38px; font-weight: 900; color: var(--accent); letter-spacing: -1px; }
+  .result-sub { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+  .summary { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 20px 24px; margin-bottom: 14px; }
+  .summary h3 { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 14px; }
+  .row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .row:last-child { border-bottom: none; }
+  .row .lbl { color: var(--muted); }
+  .row .val { font-weight: 700; }
+  .row.total .lbl { color: var(--text); font-weight: 700; }
+  .row.total .val { color: var(--accent); font-size: 16px; }
+
+  .info-box { background: rgba(45,212,191,0.07); border: 1px solid rgba(45,212,191,0.2); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; font-size: 13px; color: var(--accent); line-height: 1.8; }
+  .notice { font-size: 11px; color: var(--muted); line-height: 1.7; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 계산기 목록으로</a>
+  <h1>🏥 <span>건강보험료</span> 계산기</h1>
+  <p class="sub">직장가입자·지역가입자 건강보험료와<br>장기요양보험료를 계산합니다 (2024년 기준)</p>
+
+  <div class="tab-wrap">
+    <button class="tab-btn active" onclick="switchTab('employee')">직장가입자</button>
+    <button class="tab-btn" onclick="switchTab('local')">지역가입자</button>
+  </div>
+
+  <!-- 직장가입자 -->
+  <div class="panel active" id="panel-employee">
+    <div class="info-box">직장가입자는 <strong>월 보수월액(세전 월급)</strong>을 기준으로 계산합니다.<br>보험료의 50%는 회사가 부담합니다.</div>
+    <div class="card">
+      <label>월 보수월액 (세전 월급, 원)</label>
+      <div class="input-row">
+        <input type="number" id="emp-salary" placeholder="예: 3000000" oninput="calcEmployee()">
+        <span class="unit">원</span>
+      </div>
+    </div>
+    <div class="result-main">
+      <div class="result-label">월 건강보험료 (본인 부담)</div>
+      <div class="result-amount" id="emp-result">— 원</div>
+      <div class="result-sub" id="emp-sub"></div>
+    </div>
+    <div class="summary" id="emp-summary" style="display:none">
+      <h3>공제 상세</h3>
+      <div class="row"><span class="lbl">건강보험료 전체 (7.09%)</span><span class="val" id="e-total-health">—</span></div>
+      <div class="row"><span class="lbl">본인 부담 (50%)</span><span class="val" id="e-health">—</span></div>
+      <div class="row"><span class="lbl">장기요양보험료 본인 부담</span><span class="val" id="e-care">—</span></div>
+      <div class="row total"><span class="lbl">월 총 본인 부담</span><span class="val" id="e-total">—</span></div>
+    </div>
+  </div>
+
+  <!-- 지역가입자 -->
+  <div class="panel" id="panel-local">
+    <div class="info-box">지역가입자는 <strong>소득·재산·자동차</strong>를 기준으로 점수를 산정합니다.<br>아래는 소득 기준 간이 계산입니다.</div>
+    <div class="card">
+      <label>연간 소득 (원)</label>
+      <div class="input-row">
+        <input type="number" id="loc-income" placeholder="예: 36000000" oninput="calcLocal()">
+        <span class="unit">원</span>
+      </div>
+    </div>
+    <div class="card">
+      <label>재산 과표 (원, 없으면 0)</label>
+      <div class="input-row">
+        <input type="number" id="loc-asset" placeholder="예: 100000000" oninput="calcLocal()">
+        <span class="unit">원</span>
+      </div>
+    </div>
+    <div class="result-main">
+      <div class="result-label">월 건강보험료 (예상)</div>
+      <div class="result-amount" id="loc-result">— 원</div>
+      <div class="result-sub" id="loc-sub"></div>
+    </div>
+    <div class="summary" id="loc-summary" style="display:none">
+      <h3>계산 상세</h3>
+      <div class="row"><span class="lbl">소득 점수</span><span class="val" id="l-income-score">—</span></div>
+      <div class="row"><span class="lbl">재산 점수</span><span class="val" id="l-asset-score">—</span></div>
+      <div class="row"><span class="lbl">총 점수 × 점수당 보험료(208.4원)</span><span class="val" id="l-total-score">—</span></div>
+      <div class="row"><span class="lbl">장기요양보험료</span><span class="val" id="l-care">—</span></div>
+      <div class="row total"><span class="lbl">월 총 보험료</span><span class="val" id="l-total">—</span></div>
+    </div>
+  </div>
+
+  <p class="notice">※ 실제 보험료는 소득 정산, 재산 변동 등에 따라 달라질 수 있습니다.<br>정확한 조회는 국민건강보험공단(nhis.or.kr)을 이용하세요.</p>
+</div>
+<script>
+function fmt(n) { return Math.round(n).toLocaleString('ko-KR') + ' 원'; }
+function switchTab(t) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (t==='employee'&&i===0)||(t==='local'&&i===1)));
+  document.getElementById('panel-employee').classList.toggle('active', t==='employee');
+  document.getElementById('panel-local').classList.toggle('active', t==='local');
+}
+function calcEmployee() {
+  const salary = parseFloat(document.getElementById('emp-salary').value) || 0;
+  if (!salary) return;
+  const totalHealth = salary * 0.0709;
+  const myHealth = totalHealth / 2;
+  const myCare = myHealth * 0.1295;
+  const total = myHealth + myCare;
+  document.getElementById('emp-result').textContent = fmt(total);
+  document.getElementById('emp-sub').textContent = `건강보험 ${fmt(myHealth)} + 장기요양 ${fmt(myCare)}`;
+  document.getElementById('emp-summary').style.display = 'block';
+  document.getElementById('e-total-health').textContent = fmt(totalHealth);
+  document.getElementById('e-health').textContent = fmt(myHealth);
+  document.getElementById('e-care').textContent = fmt(myCare);
+  document.getElementById('e-total').textContent = fmt(total);
+}
+function calcLocal() {
+  const income = parseFloat(document.getElementById('loc-income').value) || 0;
+  const asset = parseFloat(document.getElementById('loc-asset').value) || 0;
+  if (!income && !asset) return;
+  // 소득 점수 (간이): 연소득 / 100만원 * 소득등급 점수 근사
+  const incomeScore = Math.min(Math.round(income / 1000000 * 2.5), 2000);
+  const assetScore = Math.min(Math.round(asset / 10000000 * 20), 1200);
+  const totalScore = incomeScore + assetScore;
+  const healthFee = totalScore * 208.4;
+  const careFee = healthFee * 0.1295;
+  const total = healthFee + careFee;
+  document.getElementById('loc-result').textContent = fmt(total);
+  document.getElementById('loc-sub').textContent = `총 ${totalScore}점 기준`;
+  document.getElementById('loc-summary').style.display = 'block';
+  document.getElementById('l-income-score').textContent = incomeScore + '점';
+  document.getElementById('l-asset-score').textContent = assetScore + '점';
+  document.getElementById('l-total-score').textContent = `${totalScore}점 → ${fmt(healthFee)}`;
+  document.getElementById('l-care').textContent = fmt(careFee);
+  document.getElementById('l-total').textContent = fmt(total);
+}
+</script>
+</body>
+</html>

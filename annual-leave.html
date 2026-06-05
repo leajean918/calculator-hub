@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>연차 계산기 | 입사일 기준 연차 발생·잔여 계산</title>
+<meta name="description" content="입사일을 입력하면 근로기준법 기준 연차 발생일수와 잔여 연차를 계산합니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg: #0f1117; --card: #1a1d27; --border: #2e3347; --accent: #a3e635; --text: #f0f2ff; --muted: #8892aa; --green: #34d399; --red: #f87171; --yellow: #fbbf24; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 30px 16px 60px; }
+  .back { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; text-decoration: none; margin-bottom: 24px; transition: color 0.2s; }
+  .back:hover { color: var(--accent); }
+  .wrap { max-width: 520px; margin: 0 auto; }
+  h1 { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
+  h1 span { color: var(--accent); }
+  .sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 22px; margin-bottom: 14px; }
+  label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+  input[type=date], input[type=number] { width: 100%; background: #0f1117; border: 1.5px solid var(--border); border-radius: 10px; color: var(--text); font-size: 15px; padding: 11px 14px; font-family: 'Noto Sans KR', sans-serif; outline: none; transition: border-color 0.2s; }
+  input:focus { border-color: var(--accent); }
+  .row2 { display: flex; gap: 12px; }
+  .row2 .ig { flex: 1; }
+
+  /* 결과 큰 카드 */
+  .result-main { background: linear-gradient(135deg, #141f0a, #1a1d27); border: 1px solid rgba(163,230,53,0.3); border-radius: 18px; padding: 24px; margin-bottom: 14px; }
+  .result-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .rg-box { text-align: center; background: rgba(163,230,53,0.05); border-radius: 12px; padding: 14px 8px; }
+  .rg-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; line-height: 1.4; }
+  .rg-val { font-size: 24px; font-weight: 900; color: var(--accent); }
+  .rg-unit { font-size: 12px; color: var(--muted); }
+
+  /* 연차 진행 바 */
+  .progress-wrap { margin-top: 4px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .progress-bg { height: 10px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--green)); transition: width 0.5s; }
+
+  /* 연도별 테이블 */
+  .year-table { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 20px 24px; margin-bottom: 14px; }
+  .year-table h3 { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 14px; }
+  .trow { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .trow:last-child { border-bottom: none; }
+  .trow .yr { color: var(--muted); }
+  .trow .days { font-weight: 700; color: var(--accent); }
+  .trow.current { background: rgba(163,230,53,0.05); border-radius: 8px; padding: 9px 10px; margin: 0 -10px; }
+  .trow.current .yr { color: var(--text); font-weight: 700; }
+  .badge-now { background: rgba(163,230,53,0.15); color: var(--accent); font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 99px; margin-left: 6px; }
+
+  .info-box { background: rgba(163,230,53,0.07); border: 1px solid rgba(163,230,53,0.2); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; font-size: 13px; color: var(--accent); line-height: 1.8; }
+  .notice { font-size: 11px; color: var(--muted); line-height: 1.7; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 계산기 목록으로</a>
+  <h1>🌿 <span>연차</span> 계산기</h1>
+  <p class="sub">입사일과 사용한 연차를 입력하면<br>잔여 연차와 연도별 발생 일수를 확인할 수 있어요</p>
+
+  <div class="card">
+    <label>입사일</label>
+    <input type="date" id="start-date" onchange="calc()">
+  </div>
+  <div class="card">
+    <label>사용한 연차 (일)</label>
+    <input type="number" id="used" placeholder="예: 5" min="0" oninput="calc()">
+  </div>
+
+  <div id="result-wrap" style="display:none">
+    <div class="result-main">
+      <div class="result-grid">
+        <div class="rg-box">
+          <div class="rg-label">올해 발생<br>연차</div>
+          <div class="rg-val" id="r-total">—</div>
+          <div class="rg-unit">일</div>
+        </div>
+        <div class="rg-box">
+          <div class="rg-label">사용한<br>연차</div>
+          <div class="rg-val" style="color:var(--red)" id="r-used">—</div>
+          <div class="rg-unit">일</div>
+        </div>
+        <div class="rg-box">
+          <div class="rg-label">잔여<br>연차</div>
+          <div class="rg-val" style="color:var(--green)" id="r-remain">—</div>
+          <div class="rg-unit">일</div>
+        </div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span style="color:var(--green)">잔여</span>
+          <span id="r-pct-text">—</span>
+          <span style="color:var(--red)">사용</span>
+        </div>
+        <div class="progress-bg"><div class="progress-fill" id="r-bar" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <div class="info-box" id="r-info"></div>
+
+    <div class="year-table">
+      <h3>연도별 연차 발생 현황</h3>
+      <div id="year-list"></div>
+    </div>
+  </div>
+
+  <p class="notice">※ 근로기준법 제60조 기준으로 계산합니다.<br>회사 취업규칙에 따라 실제 연차와 다를 수 있습니다.</p>
+</div>
+<script>
+function calc() {
+  const startStr = document.getElementById('start-date').value;
+  const used = parseFloat(document.getElementById('used').value) || 0;
+  if (!startStr) return;
+
+  const today = new Date();
+  const start = new Date(startStr);
+  if (start > today) return;
+
+  document.getElementById('result-wrap').style.display = 'block';
+
+  // 근속 개월 수
+  const totalDays = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+  const totalMonths = Math.floor(totalDays / 30.4);
+  const totalYears = Math.floor(totalDays / 365);
+
+  // 연차 계산 (근로기준법)
+  let annualLeave = 0;
+  if (totalDays < 365) {
+    // 1년 미만: 1개월 개근 시 1일씩
+    annualLeave = Math.min(totalMonths, 11);
+  } else {
+    // 1년 이상: 15일 기본, 2년마다 1일 추가, 최대 25일
+    annualLeave = Math.min(15 + Math.floor((totalYears - 1) / 2), 25);
+  }
+
+  const remain = Math.max(annualLeave - used, 0);
+  const pct = annualLeave > 0 ? Math.round((remain / annualLeave) * 100) : 0;
+
+  document.getElementById('r-total').textContent = annualLeave;
+  document.getElementById('r-used').textContent = used;
+  document.getElementById('r-remain').textContent = remain;
+  document.getElementById('r-pct-text').textContent = `잔여 ${pct}% / 사용 ${100-pct}%`;
+  document.getElementById('r-bar').style.width = pct + '%';
+
+  // 근속 정보
+  const y = Math.floor(totalDays/365);
+  const m = Math.floor((totalDays % 365) / 30);
+  document.getElementById('r-info').innerHTML = `<strong>근속기간:</strong> ${y}년 ${m}개월 (${totalDays}일)<br><strong>입사일:</strong> ${startStr} | <strong>기준일:</strong> ${today.toISOString().slice(0,10)}`;
+
+  // 연도별 테이블
+  const maxYears = Math.min(totalYears + 1, 15);
+  let html = '';
+  for (let yr = 0; yr <= maxYears; yr++) {
+    let days;
+    if (yr === 0) days = '최대 11일 (월 1일씩)';
+    else days = Math.min(15 + Math.floor((yr - 1) / 2), 25) + '일';
+    const isCurrent = yr === totalYears;
+    html += `<div class="trow${isCurrent?' current':''}">
+      <span class="yr">${yr === 0 ? '1년 미만' : `${yr}년차`}${isCurrent ? '<span class="badge-now">현재</span>' : ''}</span>
+      <span class="days">${days}</span>
+    </div>`;
+  }
+  document.getElementById('year-list').innerHTML = html;
+}
+
+// 오늘 날짜 기본값
+document.getElementById('start-date').max = new Date().toISOString().slice(0,10);
+</script>
+</body>
+</html>
