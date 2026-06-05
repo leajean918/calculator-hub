@@ -19,6 +19,10 @@
     --accent4: #f59e0b;
     --accent5: #fb923c;
     --accent6: #e879f9;
+    --accent7: #38bdf8;
+    --accent8: #2dd4bf;
+    --accent9: #facc15;
+    --accent10: #a3e635;
     --text: #f0f2ff;
     --muted: #8892aa;
     --border: #2e3347;
@@ -110,6 +114,10 @@
   .card.amber::before { background: linear-gradient(90deg, var(--accent4), #fcd34d); }
   .card.orange::before { background: linear-gradient(90deg, var(--accent5), #fdba74); }
   .card.pink::before { background: linear-gradient(90deg, var(--accent6), #f0abfc); }
+  .card.sky::before { background: linear-gradient(90deg, var(--accent7), #7dd3fc); }
+  .card.teal::before { background: linear-gradient(90deg, var(--accent8), #5eead4); }
+  .card.yellow::before { background: linear-gradient(90deg, var(--accent9), #fde68a); }
+  .card.lime::before { background: linear-gradient(90deg, var(--accent10), #d9f99d); }
 
   .card:hover {
     transform: translateY(-4px);
@@ -122,6 +130,10 @@
   .card.amber:hover { border-color: var(--accent4); }
   .card.orange:hover { border-color: var(--accent5); }
   .card.pink:hover { border-color: var(--accent6); }
+  .card.sky:hover { border-color: var(--accent7); }
+  .card.teal:hover { border-color: var(--accent8); }
+  .card.yellow:hover { border-color: var(--accent9); }
+  .card.lime:hover { border-color: var(--accent10); }
 
   .card-icon {
     font-size: 36px;
@@ -181,7 +193,7 @@
 <header>
   <div class="logo">✦ Calculator Hub</div>
   <h1>내 돈, 제대로<br><span>계산해보자</span></h1>
-  <p>연봉·퇴직금·대출·세금까지<br>복잡한 계산 한 번에 끝내세요</p>
+  <p>연봉·퇴직금·대출·세금·청약까지<br>복잡한 계산 한 번에 끝내세요</p>
 </header>
 
 <div class="grid">
@@ -230,6 +242,38 @@
     <h2>증여세·상속세 계산기</h2>
     <p>증여·상속 금액과 관계를 입력하면 예상 세금과 공제액을 계산합니다. 세율표 포함.</p>
     <span class="card-tag">절세 필수 확인</span>
+    <span class="card-arrow">→</span>
+  </a>
+
+  <a class="card blue" href="apartment.html">
+    <span class="card-icon">🏠</span>
+    <h2>청약 당첨 가점 계산기</h2>
+    <p>무주택 기간·부양가족 수·청약통장 가입기간으로 내 청약 가점을 계산합니다. 최고 84점.</p>
+    <span class="card-tag">내 집 마련 준비</span>
+    <span class="card-arrow">→</span>
+  </a>
+
+  <a class="card green" href="health.html">
+    <span class="card-icon">🏥</span>
+    <h2>건강보험료 계산기</h2>
+    <p>직장가입자·지역가입자별로 월 건강보험료와 장기요양보험료를 계산합니다.</p>
+    <span class="card-tag">매달 내는 보험료</span>
+    <span class="card-arrow">→</span>
+  </a>
+
+  <a class="card amber" href="stock.html">
+    <span class="card-icon">📈</span>
+    <h2>주식 수익률 계산기</h2>
+    <p>매수가·매도가·수량으로 수익금, 수익률, 세후 실수익을 계산합니다. 거래세 포함.</p>
+    <span class="card-tag">투자 수익 확인</span>
+    <span class="card-arrow">→</span>
+  </a>
+
+  <a class="card purple" href="annual-leave.html">
+    <span class="card-icon">🌴</span>
+    <h2>연차 계산기</h2>
+    <p>입사일 기준으로 올해 발생한 연차 일수와 남은 연차를 자동으로 계산합니다.</p>
+    <span class="card-tag">직장인 필수</span>
     <span class="card-arrow">→</span>
   </a>
 </div>
