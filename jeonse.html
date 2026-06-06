@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>전월세 전환율 계산기 | 전세→월세 월세→전세 계산</title>
+<meta name="description" content="전세금과 월세를 서로 전환할 때 필요한 보증금과 월세를 계산합니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V3FZTLEP4M"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V3FZTLEP4M');
+</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg: #0f1117; --card: #1a1d27; --border: #2e3347; --accent: #38bdf8; --text: #f0f2ff; --muted: #8892aa; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 30px 16px 60px; }
+  .back { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; text-decoration: none; margin-bottom: 24px; transition: color 0.2s; }
+  .back:hover { color: var(--accent); }
+  .wrap { max-width: 500px; margin: 0 auto; }
+  h1 { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
+  h1 span { color: var(--accent); }
+  .sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+  .tab-wrap { display: flex; border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+  .tab-btn { flex: 1; padding: 12px 0; font-size: 13px; font-weight: 700; border: none; background: var(--card); color: var(--muted); cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all 0.2s; }
+  .tab-btn.active { background: var(--accent); color: #000; }
+  .tab-btn:first-child { border-right: 1.5px solid var(--border); }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 22px; margin-bottom: 14px; }
+  label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+  .input-row { display: flex; align-items: center; }
+  input[type=number] { flex: 1; background: #0f1117; border: 1.5px solid var(--border); border-radius: 10px 0 0 10px; color: var(--text); font-size: 16px; font-weight: 500; padding: 11px 14px; font-family: 'Noto Sans KR', sans-serif; outline: none; transition: border-color 0.2s; }
+  input[type=number]:focus { border-color: var(--accent); }
+  .unit { background: #1e2235; border: 1.5px solid var(--border); border-left: none; border-radius: 0 10px 10px 0; padding: 11px 14px; font-size: 13px; color: var(--muted); white-space: nowrap; }
+  .result-box { background: linear-gradient(135deg, #071a2a, #1a1d27); border: 1px solid rgba(56,189,248,0.3); border-radius: 18px; padding: 26px 24px; text-align: center; margin-bottom: 14px; }
+  .result-label { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .result-amount { font-size: 36px; font-weight: 900; color: var(--accent); letter-spacing: -1px; }
+  .result-sub { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.7; white-space: pre-line; }
+  .info-box { background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.2); border-radius: 12px; padding: 14px 16px; font-size: 13px; color: #38bdf8; line-height: 1.8; margin-bottom: 14px; }
+  .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .row:last-child { border-bottom: none; }
+  .row .lbl { color: var(--muted); }
+  .row .val { font-weight: 700; }
+  .summary { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 18px 22px; margin-bottom: 14px; }
+  .summary h3 { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 12px; }
+  .notice { font-size: 11px; color: var(--muted); line-height: 1.7; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 계산기 목록으로</a>
+  <h1>🏠 <span>전월세 전환율</span> 계산기</h1>
+  <p class="sub">전세↔월세 전환 시 보증금과 월세를 계산합니다</p>
+
+  <div class="info-box">
+    법정 전월세 전환율: <strong>연 5.5%</strong> (2024년 기준)<br>
+    실제 계약 시 이 비율 이하로만 전환 가능합니다.
+  </div>
+
+  <div class="tab-wrap">
+    <button class="tab-btn active" onclick="switchTab('to-monthly')">전세 → 월세로</button>
+    <button class="tab-btn" onclick="switchTab('to-jeonse')">월세 → 전세로</button>
+  </div>
+
+  <!-- 전세 → 월세 -->
+  <div class="panel active" id="panel-to-monthly">
+    <div class="card">
+      <label>현재 전세 보증금</label>
+      <div class="input-row">
+        <input type="number" id="jeonse-amt" placeholder="300000000" oninput="calcToMonthly()">
+        <span class="unit">원</span>
+      </div>
+    </div>
+    <div class="card">
+      <label>유지할 보증금 (월세 전환 후)</label>
+      <div class="input-row">
+        <input type="number" id="new-deposit" placeholder="50000000" oninput="calcToMonthly()">
+        <span class="unit">원</span>
+      </div>
+    </div>
+    <div class="card">
+      <label>전환율 (%)</label>
+      <div class="input-row">
+        <input type="number" id="rate1" value="5.5" step="0.1" oninput="calcToMonthly()">
+        <span class="unit">% (연)</span>
+      </div>
+    </div>
+    <div class="result-box">
+      <div class="result-label">월 납부 월세</div>
+      <div class="result-amount" id="monthly-result">— 원</div>
+      <div class="result-sub" id="monthly-sub">보증금과 전환율을 입력하세요</div>
+    </div>
+    <div class="summary" id="summary1" style="display:none">
+      <h3>계산 상세</h3>
+      <div class="row"><span class="lbl">전환 대상 금액 (전세-보증금)</span><span class="val" id="s1-diff">—</span></div>
+      <div class="row"><span class="lbl">전환율 (연)</span><span class="val" id="s1-rate">—</span></div>
+      <div class="row"><span class="lbl">월세 = 전환금액 × 전환율 ÷ 12</span><span class="val" id="s1-monthly">—</span></div>
+    </div>
+  </div>
+
+  <!-- 월세 → 전세 -->
+  <div class="panel" id="panel-to-jeonse">
+    <div class="card">
+      <label>현재 보증금</label>
+      <div class="input-row">
+        <input type="number" id="deposit2" placeholder="10000000" oninput="calcToJeonse()">
+        <span class="unit">원</span>
+      </div>
+    </div>
+    <div class="card">
+      <label>월세</label>
+      <div class="input-row">
+        <input type="number" id="monthly2" placeholder="700000" oninput="calcToJeonse()">
+        <span class="unit">원</span>
+      </div>
+    </div>
+    <div class="card">
+      <label>전환율 (%)</label>
+      <div class="input-row">
+        <input type="number" id="rate2" value="5.5" step="0.1" oninput="calcToJeonse()">
+        <span class="unit">% (연)</span>
+      </div>
+    </div>
+    <div class="result-box">
+      <div class="result-label">환산 전세 보증금</div>
+      <div class="result-amount" id="jeonse-result">— 원</div>
+      <div class="result-sub" id="jeonse-sub">월세와 전환율을 입력하세요</div>
+    </div>
+  </div>
+
+  <p class="notice">※ 법정 전월세 전환율은 기준금리 변동에 따라 바뀔 수 있습니다.<br>정확한 내용은 국토교통부 공식 사이트를 확인하세요.</p>
+</div>
+<script>
+function fmt(n) { return Math.round(n).toLocaleString('ko-KR') + ' 원'; }
+function switchTab(t) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (t==='to-monthly'&&i===0)||(t==='to-jeonse'&&i===1)));
+  document.getElementById('panel-to-monthly').classList.toggle('active', t==='to-monthly');
+  document.getElementById('panel-to-jeonse').classList.toggle('active', t==='to-jeonse');
+}
+function calcToMonthly() {
+  const jeonse = parseFloat(document.getElementById('jeonse-amt').value) || 0;
+  const deposit = parseFloat(document.getElementById('new-deposit').value) || 0;
+  const rate = parseFloat(document.getElementById('rate1').value) || 5.5;
+  if (!jeonse) return;
+  const diff = jeonse - deposit;
+  if (diff <= 0) { document.getElementById('monthly-result').textContent = '0 원'; document.getElementById('monthly-sub').textContent = '보증금이 전세금보다 크거나 같습니다'; return; }
+  const monthly = diff * (rate / 100) / 12;
+  document.getElementById('monthly-result').textContent = fmt(monthly);
+  document.getElementById('monthly-sub').textContent = `보증금 ${fmt(deposit)} 유지\n전환 금액 ${fmt(diff)} × ${rate}% ÷ 12`;
+  document.getElementById('summary1').style.display = 'block';
+  document.getElementById('s1-diff').textContent = fmt(diff);
+  document.getElementById('s1-rate').textContent = rate + '%';
+  document.getElementById('s1-monthly').textContent = fmt(monthly);
+}
+function calcToJeonse() {
+  const deposit = parseFloat(document.getElementById('deposit2').value) || 0;
+  const monthly = parseFloat(document.getElementById('monthly2').value) || 0;
+  const rate = parseFloat(document.getElementById('rate2').value) || 5.5;
+  if (!monthly) return;
+  const converted = (monthly * 12) / (rate / 100);
+  const total = deposit + converted;
+  document.getElementById('jeonse-result').textContent = fmt(total);
+  document.getElementById('jeonse-sub').textContent = `기존 보증금 ${fmt(deposit)} + 월세 환산 ${fmt(converted)}\n= 전세 환산 ${fmt(total)}`;
+}
+</script>
+</body>
+</html>

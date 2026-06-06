@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>복리 계산기 | 투자 수익 복리 계산</title>
+<meta name="description" content="원금, 연 수익률, 투자기간을 입력하면 복리 수익과 최종 자산을 계산합니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V3FZTLEP4M"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V3FZTLEP4M');
+</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg: #0f1117; --card: #1a1d27; --border: #2e3347; --accent: #fbbf24; --text: #f0f2ff; --muted: #8892aa; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 30px 16px 60px; }
+  .back { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; text-decoration: none; margin-bottom: 24px; transition: color 0.2s; }
+  .back:hover { color: var(--accent); }
+  .wrap { max-width: 520px; margin: 0 auto; }
+  h1 { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
+  h1 span { color: var(--accent); }
+  .sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 22px; margin-bottom: 14px; }
+  label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+  .input-row { display: flex; align-items: center; }
+  input[type=number] { flex: 1; background: #0f1117; border: 1.5px solid var(--border); border-radius: 10px 0 0 10px; color: var(--text); font-size: 16px; font-weight: 500; padding: 11px 14px; font-family: 'Noto Sans KR', sans-serif; outline: none; transition: border-color 0.2s; }
+  input[type=number]:focus { border-color: var(--accent); }
+  .unit { background: #1e2235; border: 1.5px solid var(--border); border-left: none; border-radius: 0 10px 10px 0; padding: 11px 14px; font-size: 13px; color: var(--muted); white-space: nowrap; }
+  input[type=range] { width: 100%; -webkit-appearance: none; height: 4px; border-radius: 99px; background: var(--border); margin-top: 10px; cursor: pointer; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+  .range-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 5px; }
+
+  .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  .result-box { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px; text-align: center; }
+  .result-box.main { background: linear-gradient(135deg, #2a1f0a, #1a1d27); border-color: rgba(251,191,36,0.3); grid-column: 1 / -1; }
+  .result-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .result-amount { font-size: 28px; font-weight: 900; color: var(--accent); }
+  .result-amount.sub-val { font-size: 22px; color: #34d399; }
+  .result-amount.red { font-size: 22px; color: #f87171; }
+
+  .chart-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 20px 24px; margin-bottom: 14px; }
+  .chart-wrap h3 { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 14px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 12px; }
+  .bar-year { width: 32px; color: var(--muted); text-align: right; flex-shrink: 0; }
+  .bar-bg { flex: 1; height: 20px; background: #1e2235; border-radius: 4px; overflow: hidden; }
+  .bar-fill-p { height: 100%; background: #374151; border-radius: 4px 0 0 4px; display: inline-block; }
+  .bar-fill-i { height: 100%; background: var(--accent); border-radius: 0 4px 4px 0; display: inline-block; }
+  .bar-val { width: 80px; text-align: right; color: var(--text); flex-shrink: 0; }
+
+  .summary { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 18px 22px; margin-bottom: 14px; }
+  .summary h3 { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 12px; }
+  .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .row:last-child { border-bottom: none; }
+  .row .lbl { color: var(--muted); }
+  .row .val { font-weight: 700; }
+  .notice { font-size: 11px; color: var(--muted); line-height: 1.7; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 계산기 목록으로</a>
+  <h1>💰 <span>복리</span> 계산기</h1>
+  <p class="sub">원금·수익률·기간으로 복리 수익과 최종 자산을 계산합니다</p>
+
+  <div class="card">
+    <label>초기 투자금 (원금)</label>
+    <div class="input-row">
+      <input type="number" id="principal" placeholder="10000000" oninput="calc()">
+      <span class="unit">원</span>
+    </div>
+    <input type="range" id="p-slider" min="1000000" max="500000000" step="1000000" value="10000000" oninput="syncP(this.value)">
+    <div class="range-labels"><span>100만</span><span>2억 5천</span><span>5억</span></div>
+  </div>
+
+  <div class="card">
+    <label>매월 추가 투자금</label>
+    <div class="input-row">
+      <input type="number" id="monthly" placeholder="500000" oninput="calc()">
+      <span class="unit">원</span>
+    </div>
+    <input type="range" id="m-slider" min="0" max="2000000" step="100000" value="500000" oninput="syncM(this.value)">
+    <div class="range-labels"><span>0원</span><span>100만</span><span>200만</span></div>
+  </div>
+
+  <div class="card">
+    <label>연 수익률 (%)</label>
+    <div class="input-row">
+      <input type="number" id="rate" placeholder="7" step="0.1" oninput="calc()">
+      <span class="unit">% (연)</span>
+    </div>
+    <input type="range" id="r-slider" min="1" max="30" step="0.1" value="7" oninput="syncR(this.value)">
+    <div class="range-labels"><span>1%</span><span>15%</span><span>30%</span></div>
+  </div>
+
+  <div class="card">
+    <label>투자 기간</label>
+    <div class="input-row">
+      <input type="number" id="years" placeholder="20" oninput="calc()">
+      <span class="unit">년</span>
+    </div>
+    <input type="range" id="y-slider" min="1" max="40" step="1" value="20" oninput="syncY(this.value)">
+    <div class="range-labels"><span>1년</span><span>20년</span><span>40년</span></div>
+  </div>
+
+  <div class="result-grid" id="result-grid" style="display:none">
+    <div class="result-box main">
+      <div class="result-label">최종 자산</div>
+      <div class="result-amount" id="final">— 원</div>
+    </div>
+    <div class="result-box">
+      <div class="result-label">총 투자 원금</div>
+      <div class="result-amount sub-val" id="total-p">—</div>
+    </div>
+    <div class="result-box">
+      <div class="result-label">총 수익</div>
+      <div class="result-amount sub-val" id="total-i">—</div>
+    </div>
+  </div>
+
+  <div class="chart-wrap" id="chart-wrap" style="display:none">
+    <h3>연도별 자산 성장</h3>
+    <div id="chart-rows"></div>
+    <div style="display:flex; gap:16px; margin-top:10px; font-size:11px;">
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;background:#374151;border-radius:2px;display:inline-block"></span>원금</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;background:var(--accent);border-radius:2px;display:inline-block"></span>수익</span>
+    </div>
+  </div>
+
+  <p class="notice">※ 세금·수수료는 반영되지 않은 참고용 계산입니다.<br>실제 투자 수익은 시장 상황에 따라 다릅니다.</p>
+</div>
+<script>
+function fmt(n) {
+  if (n >= 100000000) return (n/100000000).toFixed(1) + '억';
+  if (n >= 10000) return Math.round(n/10000) + '만원';
+  return Math.round(n).toLocaleString() + '원';
+}
+function fmtFull(n) { return Math.round(n).toLocaleString('ko-KR') + ' 원'; }
+function syncP(v) { document.getElementById('principal').value = v; calc(); }
+function syncM(v) { document.getElementById('monthly').value = v; calc(); }
+function syncR(v) { document.getElementById('rate').value = v; calc(); }
+function syncY(v) { document.getElementById('years').value = v; calc(); }
+
+function calc() {
+  const p = parseFloat(document.getElementById('principal').value) || 0;
+  const m = parseFloat(document.getElementById('monthly').value) || 0;
+  const r = parseFloat(document.getElementById('rate').value) || 0;
+  const y = parseInt(document.getElementById('years').value) || 0;
+  document.getElementById('p-slider').value = Math.min(Math.max(p,1000000),500000000);
+  document.getElementById('m-slider').value = Math.min(Math.max(m,0),2000000);
+  document.getElementById('r-slider').value = Math.min(Math.max(r,1),30);
+  document.getElementById('y-slider').value = Math.min(Math.max(y,1),40);
+  if (!p || !r || !y) return;
+
+  const monthlyRate = r / 100 / 12;
+  const months = y * 12;
+  let balance = p;
+  for (let i = 0; i < months; i++) {
+    balance = balance * (1 + monthlyRate) + m;
+  }
+  const totalPrincipal = p + m * months;
+  const totalInterest = balance - totalPrincipal;
+
+  document.getElementById('result-grid').style.display = 'grid';
+  document.getElementById('chart-wrap').style.display = 'block';
+  document.getElementById('final').textContent = fmtFull(balance);
+  document.getElementById('total-p').textContent = fmt(totalPrincipal);
+  document.getElementById('total-i').textContent = fmt(totalInterest);
+
+  // 차트
+  const maxVal = balance;
+  let html = '';
+  const step = y <= 10 ? 1 : y <= 20 ? 5 : 10;
+  for (let yr = step; yr <= y; yr += step) {
+    const mn = yr * 12;
+    let b = p;
+    for (let i = 0; i < mn; i++) b = b * (1 + monthlyRate) + m;
+    const tp = p + m * mn;
+    const pPct = Math.round((tp / maxVal) * 100);
+    const iPct = Math.round(((b - tp) / maxVal) * 100);
+    html += `<div class="bar-row">
+      <span class="bar-year">${yr}년</span>
+      <div class="bar-bg"><span class="bar-fill-p" style="width:${pPct}%"></span><span class="bar-fill-i" style="width:${iPct}%"></span></div>
+      <span class="bar-val">${fmt(b)}</span>
+    </div>`;
+  }
+  document.getElementById('chart-rows').innerHTML = html;
+}
+
+document.getElementById('principal').value = 10000000;
+document.getElementById('monthly').value = 500000;
+document.getElementById('rate').value = 7;
+document.getElementById('years').value = 20;
+calc();
+</script>
+</body>
+</html>

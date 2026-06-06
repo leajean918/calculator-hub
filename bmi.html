@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BMI 계산기 | 체질량지수 비만도 계산</title>
+<meta name="description" content="키와 몸무게를 입력하면 BMI 체질량지수와 비만도를 계산합니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V3FZTLEP4M"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V3FZTLEP4M');
+</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg: #0f1117; --card: #1a1d27; --border: #2e3347; --accent: #34d399; --text: #f0f2ff; --muted: #8892aa; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 30px 16px 60px; }
+  .back { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; text-decoration: none; margin-bottom: 24px; transition: color 0.2s; }
+  .back:hover { color: var(--accent); }
+  .wrap { max-width: 480px; margin: 0 auto; }
+  h1 { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
+  h1 span { color: var(--accent); }
+  .sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 22px; margin-bottom: 14px; }
+  label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+  .input-row { display: flex; align-items: center; }
+  input[type=number] { flex: 1; background: #0f1117; border: 1.5px solid var(--border); border-radius: 10px 0 0 10px; color: var(--text); font-size: 22px; font-weight: 700; padding: 11px 14px; font-family: 'Noto Sans KR', sans-serif; outline: none; transition: border-color 0.2s; }
+  input[type=number]:focus { border-color: var(--accent); }
+  .unit { background: #1e2235; border: 1.5px solid var(--border); border-left: none; border-radius: 0 10px 10px 0; padding: 11px 16px; font-size: 14px; color: var(--muted); }
+  input[type=range] { width: 100%; -webkit-appearance: none; height: 4px; border-radius: 99px; background: var(--border); margin-top: 10px; cursor: pointer; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+  .range-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 5px; }
+
+  .result-main { border-radius: 18px; padding: 28px 24px; margin-bottom: 14px; text-align: center; transition: background 0.4s, border-color 0.4s; background: linear-gradient(135deg, #0a2a1a, #1a1d27); border: 1px solid rgba(52,211,153,0.3); }
+  .bmi-circle { width: 130px; height: 130px; border-radius: 50%; margin: 0 auto 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 4px solid var(--accent); transition: border-color 0.4s; }
+  .bmi-num { font-size: 44px; font-weight: 900; color: var(--accent); line-height: 1; transition: color 0.4s; }
+  .bmi-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .bmi-grade { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .bmi-comment { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  .bmi-bar-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 20px 24px; margin-bottom: 14px; }
+  .bmi-bar-wrap h3 { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 14px; }
+  .bar-track { position: relative; height: 12px; border-radius: 99px; overflow: hidden; background: linear-gradient(90deg, #38bdf8 0%, #34d399 25%, #fbbf24 55%, #fb923c 75%, #f87171 100%); margin-bottom: 8px; }
+  .bar-marker { position: absolute; top: -4px; width: 4px; height: 20px; background: #fff; border-radius: 2px; transform: translateX(-50%); transition: left 0.4s; box-shadow: 0 0 4px rgba(0,0,0,0.5); }
+  .bar-ticks { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+
+  .table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 20px 24px; margin-bottom: 14px; }
+  .table-wrap h3 { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  td, th { padding: 8px 0; border-bottom: 1px solid var(--border); }
+  th { font-size: 11px; color: var(--muted); text-align: left; }
+  tr:last-child td { border-bottom: none; }
+  td:last-child { text-align: right; font-weight: 700; }
+
+  .notice { font-size: 11px; color: var(--muted); line-height: 1.7; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 계산기 목록으로</a>
+  <h1>💊 <span>BMI</span> 계산기</h1>
+  <p class="sub">키와 몸무게를 입력하면 체질량지수(BMI)와 비만도를 알려드립니다</p>
+
+  <div class="card">
+    <label>키 (cm)</label>
+    <div class="input-row">
+      <input type="number" id="height" placeholder="170" oninput="calc()">
+      <span class="unit">cm</span>
+    </div>
+    <input type="range" id="h-slider" min="140" max="210" step="1" value="170" oninput="syncH(this.value)">
+    <div class="range-labels"><span>140cm</span><span>175cm</span><span>210cm</span></div>
+  </div>
+
+  <div class="card">
+    <label>몸무게 (kg)</label>
+    <div class="input-row">
+      <input type="number" id="weight" placeholder="65" oninput="calc()">
+      <span class="unit">kg</span>
+    </div>
+    <input type="range" id="w-slider" min="30" max="150" step="0.5" value="65" oninput="syncW(this.value)">
+    <div class="range-labels"><span>30kg</span><span>90kg</span><span>150kg</span></div>
+  </div>
+
+  <div class="result-main" id="result-main">
+    <div class="bmi-circle" id="bmi-circle">
+      <div class="bmi-num" id="bmi-num">—</div>
+      <div class="bmi-label">BMI</div>
+    </div>
+    <div class="bmi-grade" id="bmi-grade">키와 몸무게를 입력하세요</div>
+    <div class="bmi-comment" id="bmi-comment"></div>
+  </div>
+
+  <div class="bmi-bar-wrap">
+    <h3>BMI 범위 위치</h3>
+    <div class="bar-track">
+      <div class="bar-marker" id="bar-marker" style="left: 0%"></div>
+    </div>
+    <div class="bar-ticks">
+      <span>18.5</span><span>23</span><span>25</span><span>30</span>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <h3>BMI 기준표 (아시아·한국 기준)</h3>
+    <table>
+      <tr><th>구분</th><th>BMI 범위</th></tr>
+      <tr><td>저체중</td><td>18.5 미만</td></tr>
+      <tr><td>정상</td><td>18.5 ~ 22.9</td></tr>
+      <tr><td>과체중</td><td>23 ~ 24.9</td></tr>
+      <tr><td>비만 1단계</td><td>25 ~ 29.9</td></tr>
+      <tr><td>비만 2단계</td><td>30 이상</td></tr>
+    </table>
+  </div>
+
+  <p class="notice">※ BMI는 근육량·골격 등을 반영하지 않는 참고 지표입니다.<br>정확한 건강 상태는 전문의와 상담하세요.</p>
+</div>
+<script>
+function syncH(v) { document.getElementById('height').value = v; calc(); }
+function syncW(v) { document.getElementById('weight').value = v; calc(); }
+
+function calc() {
+  const h = parseFloat(document.getElementById('height').value) || 0;
+  const w = parseFloat(document.getElementById('weight').value) || 0;
+  document.getElementById('h-slider').value = Math.min(Math.max(h, 140), 210);
+  document.getElementById('w-slider').value = Math.min(Math.max(w, 30), 150);
+  if (!h || !w) return;
+
+  const bmi = w / ((h / 100) ** 2);
+  const bmiFixed = bmi.toFixed(1);
+
+  let grade, comment, color, bg, borderColor;
+  if (bmi < 18.5) {
+    grade = '저체중'; comment = '체중이 다소 부족합니다. 균형 잡힌 식사와 운동을 권장합니다.';
+    color = '#38bdf8'; bg = 'linear-gradient(135deg, #071a2a, #1a1d27)'; borderColor = 'rgba(56,189,248,0.3)';
+  } else if (bmi < 23) {
+    grade = '✅ 정상 체중'; comment = '건강한 체중 범위입니다. 현재 생활습관을 유지하세요!';
+    color = '#34d399'; bg = 'linear-gradient(135deg, #0a2a1a, #1a1d27)'; borderColor = 'rgba(52,211,153,0.3)';
+  } else if (bmi < 25) {
+    grade = '⚠️ 과체중'; comment = '정상 범위를 약간 초과했습니다. 식이 조절과 운동을 시작해보세요.';
+    color = '#fbbf24'; bg = 'linear-gradient(135deg, #2a1f0a, #1a1d27)'; borderColor = 'rgba(251,191,36,0.3)';
+  } else if (bmi < 30) {
+    grade = '🔴 비만 1단계'; comment = '비만 범위입니다. 생활습관 개선과 전문가 상담을 권장합니다.';
+    color = '#fb923c'; bg = 'linear-gradient(135deg, #2a1508, #1a1d27)'; borderColor = 'rgba(251,146,60,0.3)';
+  } else {
+    grade = '🔴 비만 2단계'; comment = '고도비만 범위입니다. 의료 전문가와 상담을 권장합니다.';
+    color = '#f87171'; bg = 'linear-gradient(135deg, #2a0a0a, #1a1d27)'; borderColor = 'rgba(248,113,113,0.3)';
+  }
+
+  document.getElementById('bmi-num').textContent = bmiFixed;
+  document.getElementById('bmi-num').style.color = color;
+  document.getElementById('bmi-circle').style.borderColor = color;
+  document.getElementById('bmi-grade').textContent = grade;
+  document.getElementById('bmi-grade').style.color = color;
+  document.getElementById('bmi-comment').textContent = comment;
+  document.getElementById('result-main').style.background = bg;
+  document.getElementById('result-main').style.borderColor = borderColor;
+
+  // 바 마커 위치 (BMI 15~35 범위 매핑)
+  const pct = Math.min(Math.max((bmi - 15) / 20 * 100, 0), 100);
+  document.getElementById('bar-marker').style.left = pct + '%';
+}
+
+document.getElementById('height').value = 170;
+document.getElementById('weight').value = 65;
+calc();
+</script>
+</body>
+</html>
