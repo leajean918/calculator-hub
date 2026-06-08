@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>야근수당 계산기 | 연장·야간·휴일근무 수당 계산</title>
+<meta name="description" content="시급과 근무 시간을 입력하면 연장근무·야간근무·휴일근무 법정 수당을 계산합니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V3FZTLEP4M"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V3FZTLEP4M');
+</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg: #0f1117; --card: #1a1d27; --border: #2e3347; --accent: #f87171; --text: #f0f2ff; --muted: #8892aa; --green: #34d399; --amber: #fbbf24; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 30px 16px 60px; }
+  .back { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; text-decoration: none; margin-bottom: 24px; }
+  .back:hover { color: var(--accent); }
+  .wrap { max-width: 500px; margin: 0 auto; }
+  h1 { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
+  h1 span { color: var(--accent); }
+  .sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 22px; margin-bottom: 14px; }
+  label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+  .input-row { display: flex; align-items: center; }
+  input[type=number] { flex: 1; background: #0f1117; border: 1.5px solid var(--border); border-radius: 10px 0 0 10px; color: var(--text); font-size: 16px; font-weight: 500; padding: 11px 14px; font-family: 'Noto Sans KR', sans-serif; outline: none; transition: border-color 0.2s; }
+  input[type=number]:focus { border-color: var(--accent); }
+  .unit { background: #1e2235; border: 1.5px solid var(--border); border-left: none; border-radius: 0 10px 10px 0; padding: 11px 14px; font-size: 13px; color: var(--muted); white-space: nowrap; }
+  input[type=range] { width: 100%; -webkit-appearance: none; height: 4px; border-radius: 99px; background: var(--border); margin-top: 10px; cursor: pointer; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+  .range-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 5px; }
+
+  .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  .result-box { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px; text-align: center; }
+  .result-box.main { background: linear-gradient(135deg, #2a0a0a, #1a1d27); border-color: rgba(248,113,113,0.3); grid-column: 1 / -1; }
+  .r-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .r-val { font-size: 26px; font-weight: 900; }
+  .r-val.red { color: var(--accent); }
+  .r-val.amber { color: var(--amber); }
+  .r-val.green { color: var(--green); }
+
+  .summary { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 18px 22px; margin-bottom: 14px; }
+  .summary h3 { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 12px; }
+  .row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .row:last-child { border-bottom: none; }
+  .row .lbl { color: var(--muted); }
+  .row .right { text-align: right; }
+  .row .rate { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .row .val { font-weight: 700; }
+
+  .law-box { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); border-radius: 12px; padding: 14px 16px; font-size: 12px; color: var(--muted); line-height: 1.9; margin-bottom: 14px; }
+  .notice { font-size: 11px; color: var(--muted); line-height: 1.7; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 계산기 목록으로</a>
+  <h1>⏰ <span>야근수당</span> 계산기</h1>
+  <p class="sub">연장·야간·휴일근무 법정 수당을 계산합니다 (근로기준법 기준)</p>
+
+  <div class="law-box">
+    ⚖️ <b style="color:var(--accent)">법정 가산수당 기준</b><br>
+    연장근무 (1일 8시간 초과): <b style="color:white">통상시급 × 1.5배</b><br>
+    야간근무 (오후 10시~오전 6시): <b style="color:white">통상시급 × 0.5배 추가</b><br>
+    휴일근무: <b style="color:white">통상시급 × 1.5배 (8시간 초과 시 2배)</b>
+  </div>
+
+  <div class="card">
+    <label>월급여 (세전)</label>
+    <div class="input-row"><input type="number" id="monthly" placeholder="3000000" oninput="calc()"><span class="unit">원</span></div>
+    <input type="range" id="m-slider" min="2000000" max="10000000" step="100000" value="3000000" oninput="document.getElementById('monthly').value=this.value; calc()">
+    <div class="range-labels"><span>200만</span><span>600만</span><span>1,000만</span></div>
+  </div>
+
+  <div class="card">
+    <label>주간 소정근로시간</label>
+    <div class="input-row"><input type="number" id="workhours" value="40" oninput="calc()"><span class="unit">시간/주</span></div>
+  </div>
+
+  <div class="card">
+    <label>이번 달 연장근무 시간</label>
+    <div class="input-row"><input type="number" id="overtime" placeholder="10" oninput="calc()"><span class="unit">시간</span></div>
+    <input type="range" id="o-slider" min="0" max="52" step="1" value="10" oninput="document.getElementById('overtime').value=this.value; calc()">
+    <div class="range-labels"><span>0시간</span><span>26시간</span><span>52시간</span></div>
+  </div>
+
+  <div class="card">
+    <label>이번 달 야간근무 시간 (밤 10시~새벽 6시)</label>
+    <div class="input-row"><input type="number" id="night" placeholder="0" oninput="calc()"><span class="unit">시간</span></div>
+  </div>
+
+  <div class="card">
+    <label>이번 달 휴일근무 시간</label>
+    <div class="input-row"><input type="number" id="holiday" placeholder="0" oninput="calc()"><span class="unit">시간</span></div>
+  </div>
+
+  <div class="result-grid" id="result-wrap" style="display:none">
+    <div class="result-box main">
+      <div class="r-label">이번 달 추가 수령 수당</div>
+      <div class="r-val red" id="r-total">— 원</div>
+    </div>
+    <div class="result-box">
+      <div class="r-label">통상시급</div>
+      <div class="r-val amber" id="r-hourly">—</div>
+    </div>
+    <div class="result-box">
+      <div class="r-label">이번 달 총 급여</div>
+      <div class="r-val green" id="r-gross">—</div>
+    </div>
+  </div>
+
+  <div class="summary" id="summary" style="display:none">
+    <h3>수당 상세</h3>
+    <div class="row">
+      <span class="lbl">연장근무 수당</span>
+      <div class="right"><div class="val" id="s-overtime">—</div><div class="rate">시급 × 1.5 × <span id="s-ot-h">0</span>시간</div></div>
+    </div>
+    <div class="row">
+      <span class="lbl">야간근무 수당</span>
+      <div class="right"><div class="val" id="s-night">—</div><div class="rate">시급 × 0.5 추가 × <span id="s-n-h">0</span>시간</div></div>
+    </div>
+    <div class="row">
+      <span class="lbl">휴일근무 수당</span>
+      <div class="right"><div class="val" id="s-holiday">—</div><div class="rate">시급 × 1.5 × <span id="s-h-h">0</span>시간</div></div>
+    </div>
+  </div>
+  <p class="notice">※ 5인 미만 사업장은 연장·야간·휴일 가산수당 적용 제외될 수 있습니다.<br>정확한 계산은 고용노동부 또는 노무사에게 문의하세요.</p>
+</div>
+<script>
+function fmt(n) { return Math.round(n).toLocaleString('ko-KR') + ' 원'; }
+function calc() {
+  const monthly = parseFloat(document.getElementById('monthly').value)||0;
+  const workhours = parseFloat(document.getElementById('workhours').value)||40;
+  const ot = parseFloat(document.getElementById('overtime').value)||0;
+  const night = parseFloat(document.getElementById('night').value)||0;
+  const holiday = parseFloat(document.getElementById('holiday').value)||0;
+  document.getElementById('m-slider').value = Math.min(Math.max(monthly,2000000),10000000);
+  document.getElementById('o-slider').value = Math.min(Math.max(ot,0),52);
+  if (!monthly) return;
+
+  // 통상시급 = 월급 / (주소정시간 + 주휴시간) × 52주 / 12개월
+  const weeklyHours = workhours + (workhours/5); // 주휴시간 포함
+  const hourly = monthly / (weeklyHours * 52 / 12);
+
+  const otPay = hourly * 1.5 * ot;
+  const nightPay = hourly * 0.5 * night;
+  const holidayPay = hourly * 1.5 * holiday;
+  const totalExtra = otPay + nightPay + holidayPay;
+
+  document.getElementById('result-wrap').style.display = 'grid';
+  document.getElementById('summary').style.display = 'block';
+  document.getElementById('r-hourly').textContent = Math.round(hourly).toLocaleString() + '원';
+  document.getElementById('r-total').textContent = fmt(totalExtra);
+  document.getElementById('r-gross').textContent = fmt(monthly + totalExtra);
+  document.getElementById('s-overtime').textContent = fmt(otPay);
+  document.getElementById('s-night').textContent = fmt(nightPay);
+  document.getElementById('s-holiday').textContent = fmt(holidayPay);
+  document.getElementById('s-ot-h').textContent = ot;
+  document.getElementById('s-n-h').textContent = night;
+  document.getElementById('s-h-h').textContent = holiday;
+}
+document.getElementById('monthly').value = 3000000;
+calc();
+</script>
+</body>
+</html>

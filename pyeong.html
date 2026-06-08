@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>평수 계산기 | 평 m² 제곱미터 상호 변환</title>
+<meta name="description" content="평과 제곱미터(㎡)를 상호 변환합니다. 아파트 면적 확인 시 필수.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V3FZTLEP4M"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V3FZTLEP4M');
+</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg: #0f1117; --card: #1a1d27; --border: #2e3347; --accent: #38bdf8; --text: #f0f2ff; --muted: #8892aa; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 30px 16px 60px; }
+  .back { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; text-decoration: none; margin-bottom: 24px; }
+  .back:hover { color: var(--accent); }
+  .wrap { max-width: 460px; margin: 0 auto; }
+  h1 { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
+  h1 span { color: var(--accent); }
+  .sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+
+  .converter { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 28px 24px; margin-bottom: 16px; }
+  .conv-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .conv-row:last-child { margin-bottom: 0; }
+  .conv-label { font-size: 13px; font-weight: 700; color: var(--muted); width: 50px; flex-shrink: 0; }
+  .conv-input { flex: 1; background: #0f1117; border: 1.5px solid var(--border); border-radius: 12px; color: var(--text); font-size: 22px; font-weight: 700; padding: 14px 16px; font-family: 'Noto Sans KR', sans-serif; outline: none; transition: border-color 0.2s; }
+  .conv-input:focus { border-color: var(--accent); }
+  .conv-unit { font-size: 16px; font-weight: 700; color: var(--accent); width: 40px; flex-shrink: 0; }
+  .arrow-wrap { text-align: center; font-size: 22px; color: var(--muted); margin: 4px 0; }
+
+  .quick-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 20px 22px; margin-bottom: 14px; }
+  .quick-wrap h3 { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 14px; }
+  .quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .quick-btn { background: #0f1117; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 6px; text-align: center; cursor: pointer; transition: all 0.2s; }
+  .quick-btn:hover { border-color: var(--accent); }
+  .quick-btn .p { font-size: 16px; font-weight: 700; color: var(--text); }
+  .quick-btn .m { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .ref-table { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 18px 22px; margin-bottom: 14px; }
+  .ref-table h3 { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { color: var(--muted); font-size: 11px; padding: 6px 0; border-bottom: 1px solid var(--border); text-align: left; }
+  td { padding: 8px 0; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+  td.highlight { color: var(--accent); font-weight: 700; }
+  .notice { font-size: 11px; color: var(--muted); line-height: 1.7; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 계산기 목록으로</a>
+  <h1>📐 <span>평수</span> 계산기</h1>
+  <p class="sub">평 ↔ ㎡(제곱미터) 즉시 변환 · 아파트 면적 확인 필수</p>
+
+  <div class="converter">
+    <div class="conv-row">
+      <span class="conv-label">평</span>
+      <input class="conv-input" type="number" id="pyeong" placeholder="25" oninput="fromPyeong()">
+      <span class="conv-unit">평</span>
+    </div>
+    <div class="arrow-wrap">⇅</div>
+    <div class="conv-row">
+      <span class="conv-label">㎡</span>
+      <input class="conv-input" type="number" id="sqm" placeholder="82.6" oninput="fromSqm()">
+      <span class="conv-unit">㎡</span>
+    </div>
+  </div>
+
+  <div class="quick-wrap">
+    <h3>아파트 평형 빠른 변환</h3>
+    <div class="quick-grid">
+      <div class="quick-btn" onclick="setPyeong(10)"><div class="p">10평</div><div class="m">33.1㎡</div></div>
+      <div class="quick-btn" onclick="setPyeong(15)"><div class="p">15평</div><div class="m">49.6㎡</div></div>
+      <div class="quick-btn" onclick="setPyeong(20)"><div class="p">20평</div><div class="m">66.1㎡</div></div>
+      <div class="quick-btn" onclick="setPyeong(24)"><div class="p">24평</div><div class="m">79.3㎡</div></div>
+      <div class="quick-btn" onclick="setPyeong(25)"><div class="p">25평</div><div class="m">82.6㎡</div></div>
+      <div class="quick-btn" onclick="setPyeong(30)"><div class="p">30평</div><div class="m">99.2㎡</div></div>
+      <div class="quick-btn" onclick="setPyeong(34)"><div class="p">34평</div><div class="m">112㎡</div></div>
+      <div class="quick-btn" onclick="setPyeong(40)"><div class="p">40평</div><div class="m">132㎡</div></div>
+    </div>
+  </div>
+
+  <div class="ref-table">
+    <h3>주요 평형 기준표</h3>
+    <table>
+      <tr><th>평형</th><th>공급면적 (㎡)</th><th>전용면적 (㎡ 약)</th><th>방 수</th></tr>
+      <tr><td>20평형</td><td class="highlight">66㎡</td><td>49㎡</td><td>방 2개</td></tr>
+      <tr><td>25평형</td><td class="highlight">83㎡</td><td>59㎡</td><td>방 3개</td></tr>
+      <tr><td>30평형</td><td class="highlight">99㎡</td><td>75㎡</td><td>방 3개</td></tr>
+      <tr><td>34평형</td><td class="highlight">112㎡</td><td>84㎡</td><td>방 3~4개</td></tr>
+      <tr><td>40평형</td><td class="highlight">132㎡</td><td>102㎡</td><td>방 4개</td></tr>
+    </table>
+  </div>
+
+  <p class="notice">※ 1평 = 3.30579㎡ (공식 환산 기준)<br>공급면적 = 전용면적 + 공용면적 (계단·복도 등)</p>
+</div>
+<script>
+const RATE = 3.30579;
+function fromPyeong() {
+  const p = parseFloat(document.getElementById('pyeong').value);
+  if (isNaN(p)) { document.getElementById('sqm').value = ''; return; }
+  document.getElementById('sqm').value = (p * RATE).toFixed(2);
+}
+function fromSqm() {
+  const m = parseFloat(document.getElementById('sqm').value);
+  if (isNaN(m)) { document.getElementById('pyeong').value = ''; return; }
+  document.getElementById('pyeong').value = (m / RATE).toFixed(2);
+}
+function setPyeong(p) {
+  document.getElementById('pyeong').value = p;
+  fromPyeong();
+}
+</script>
+</body>
+</html>
