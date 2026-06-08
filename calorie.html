@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>칼로리 계산기 | 하루 권장 칼로리 TDEE 계산</title>
+<meta name="description" content="키·몸무게·나이·활동량으로 하루 권장 칼로리(TDEE)와 목표별 칼로리를 계산합니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V3FZTLEP4M"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V3FZTLEP4M');
+</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg: #0f1117; --card: #1a1d27; --border: #2e3347; --accent: #fb923c; --text: #f0f2ff; --muted: #8892aa; --green: #34d399; --blue: #38bdf8; --red: #f87171; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 30px 16px 60px; }
+  .back { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; text-decoration: none; margin-bottom: 24px; }
+  .back:hover { color: var(--accent); }
+  .wrap { max-width: 500px; margin: 0 auto; }
+  h1 { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
+  h1 span { color: var(--accent); }
+  .sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+  .gender-wrap { display: flex; gap: 10px; margin-bottom: 14px; }
+  .gender-btn { flex: 1; padding: 12px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--card); color: var(--muted); font-size: 14px; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.2s; font-family: 'Noto Sans KR', sans-serif; }
+  .gender-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(251,146,60,0.1); }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 22px; margin-bottom: 14px; }
+  label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+  .input-row { display: flex; align-items: center; }
+  input[type=number] { flex: 1; background: #0f1117; border: 1.5px solid var(--border); border-radius: 10px 0 0 10px; color: var(--text); font-size: 16px; font-weight: 500; padding: 11px 14px; font-family: 'Noto Sans KR', sans-serif; outline: none; transition: border-color 0.2s; }
+  input[type=number]:focus { border-color: var(--accent); }
+  .unit { background: #1e2235; border: 1.5px solid var(--border); border-left: none; border-radius: 0 10px 10px 0; padding: 11px 14px; font-size: 13px; color: var(--muted); }
+  input[type=range] { width: 100%; -webkit-appearance: none; height: 4px; border-radius: 99px; background: var(--border); margin-top: 10px; cursor: pointer; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+  .range-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 5px; }
+  select { width: 100%; background: #0f1117; border: 1.5px solid var(--border); border-radius: 10px; color: var(--text); font-size: 14px; padding: 11px 14px; font-family: 'Noto Sans KR', sans-serif; outline: none; cursor: pointer; }
+  select:focus { border-color: var(--accent); }
+
+  .result-main { background: linear-gradient(135deg, #2a1508, #1a1d27); border: 1px solid rgba(251,146,60,0.3); border-radius: 18px; padding: 24px; margin-bottom: 14px; text-align: center; }
+  .result-label { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .result-amount { font-size: 48px; font-weight: 900; color: var(--accent); letter-spacing: -2px; }
+  .result-unit { font-size: 16px; color: var(--muted); margin-top: 4px; }
+
+  .goal-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .goal-box { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; text-align: center; }
+  .goal-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; line-height: 1.4; }
+  .goal-val { font-size: 20px; font-weight: 900; }
+  .goal-val.loss { color: var(--blue); }
+  .goal-val.maintain { color: var(--accent); }
+  .goal-val.gain { color: var(--red); }
+
+  .summary { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 18px 22px; margin-bottom: 14px; }
+  .summary h3 { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 12px; }
+  .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .row:last-child { border-bottom: none; }
+  .row .lbl { color: var(--muted); }
+  .row .val { font-weight: 700; }
+  .notice { font-size: 11px; color: var(--muted); line-height: 1.7; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 계산기 목록으로</a>
+  <h1>🏋️ <span>칼로리</span> 계산기</h1>
+  <p class="sub">키·몸무게·나이·활동량으로 하루 권장 칼로리(TDEE)를 계산합니다</p>
+
+  <div class="gender-wrap">
+    <button class="gender-btn active" id="btn-male" onclick="setGender('male')">남성</button>
+    <button class="gender-btn" id="btn-female" onclick="setGender('female')">여성</button>
+  </div>
+
+  <div class="card">
+    <label>키 (cm)</label>
+    <div class="input-row"><input type="number" id="height" placeholder="170" oninput="calc()"><span class="unit">cm</span></div>
+    <input type="range" id="h-slider" min="140" max="210" step="1" value="170" oninput="document.getElementById('height').value=this.value; calc()">
+    <div class="range-labels"><span>140cm</span><span>175cm</span><span>210cm</span></div>
+  </div>
+  <div class="card">
+    <label>몸무게 (kg)</label>
+    <div class="input-row"><input type="number" id="weight" placeholder="70" oninput="calc()"><span class="unit">kg</span></div>
+    <input type="range" id="w-slider" min="30" max="150" step="1" value="70" oninput="document.getElementById('weight').value=this.value; calc()">
+    <div class="range-labels"><span>30kg</span><span>90kg</span><span>150kg</span></div>
+  </div>
+  <div class="card">
+    <label>나이</label>
+    <div class="input-row"><input type="number" id="age" placeholder="30" oninput="calc()"><span class="unit">세</span></div>
+    <input type="range" id="a-slider" min="10" max="80" step="1" value="30" oninput="document.getElementById('age').value=this.value; calc()">
+    <div class="range-labels"><span>10세</span><span>45세</span><span>80세</span></div>
+  </div>
+  <div class="card">
+    <label>활동 수준</label>
+    <select id="activity" onchange="calc()">
+      <option value="1.2">거의 운동 안 함 (사무직·주로 앉아있음)</option>
+      <option value="1.375">가벼운 운동 (주 1~3회)</option>
+      <option value="1.55" selected>보통 운동 (주 3~5회)</option>
+      <option value="1.725">격렬한 운동 (주 6~7회)</option>
+      <option value="1.9">매우 격렬 (운동선수·육체노동)</option>
+    </select>
+  </div>
+
+  <div class="result-main">
+    <div class="result-label">하루 권장 칼로리 (TDEE)</div>
+    <div class="result-amount" id="tdee">—</div>
+    <div class="result-unit">kcal / 일</div>
+  </div>
+
+  <div class="goal-grid" id="goal-grid" style="display:none">
+    <div class="goal-box">
+      <div class="goal-label">체중 감량<br>(-500kcal)</div>
+      <div class="goal-val loss" id="g-loss">—</div>
+      <div style="font-size:11px; color:var(--muted)">kcal</div>
+    </div>
+    <div class="goal-box">
+      <div class="goal-label">체중 유지<br>(현재 권장)</div>
+      <div class="goal-val maintain" id="g-maintain">—</div>
+      <div style="font-size:11px; color:var(--muted)">kcal</div>
+    </div>
+    <div class="goal-box">
+      <div class="goal-label">근육 증가<br>(+300kcal)</div>
+      <div class="goal-val gain" id="g-gain">—</div>
+      <div style="font-size:11px; color:var(--muted)">kcal</div>
+    </div>
+  </div>
+
+  <div class="summary" id="summary" style="display:none">
+    <h3>계산 상세</h3>
+    <div class="row"><span class="lbl">기초대사량 (BMR)</span><span class="val" id="s-bmr">—</span></div>
+    <div class="row"><span class="lbl">활동 계수</span><span class="val" id="s-act">—</span></div>
+    <div class="row"><span class="lbl">BMI</span><span class="val" id="s-bmi">—</span></div>
+  </div>
+  <p class="notice">※ Mifflin-St Jeor 공식 기준입니다.<br>개인의 신체 상태에 따라 실제 칼로리 필요량이 다를 수 있습니다.</p>
+</div>
+<script>
+let gender = 'male';
+function setGender(g) {
+  gender = g;
+  document.getElementById('btn-male').classList.toggle('active', g==='male');
+  document.getElementById('btn-female').classList.toggle('active', g==='female');
+  calc();
+}
+function calc() {
+  const h = parseFloat(document.getElementById('height').value)||0;
+  const w = parseFloat(document.getElementById('weight').value)||0;
+  const a = parseFloat(document.getElementById('age').value)||0;
+  const act = parseFloat(document.getElementById('activity').value)||1.55;
+  if (!h||!w||!a) return;
+
+  // Mifflin-St Jeor
+  let bmr;
+  if (gender === 'male') bmr = 10*w + 6.25*h - 5*a + 5;
+  else bmr = 10*w + 6.25*h - 5*a - 161;
+
+  const tdee = Math.round(bmr * act);
+  const bmi = (w / ((h/100)**2)).toFixed(1);
+
+  document.getElementById('tdee').textContent = tdee.toLocaleString();
+  document.getElementById('goal-grid').style.display = 'grid';
+  document.getElementById('summary').style.display = 'block';
+  document.getElementById('g-loss').textContent = (tdee-500).toLocaleString();
+  document.getElementById('g-maintain').textContent = tdee.toLocaleString();
+  document.getElementById('g-gain').textContent = (tdee+300).toLocaleString();
+  document.getElementById('s-bmr').textContent = Math.round(bmr).toLocaleString() + ' kcal';
+  document.getElementById('s-act').textContent = act + 'x';
+  document.getElementById('s-bmi').textContent = bmi;
+}
+document.getElementById('height').value = 170;
+document.getElementById('weight').value = 70;
+document.getElementById('age').value = 30;
+calc();
+</script>
+</body>
+</html>

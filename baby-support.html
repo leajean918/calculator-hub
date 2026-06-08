@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>출산지원금 계산기 | 2024 출산 혜택 총액 계산</title>
+<meta name="description" content="2024년 기준 첫만남이용권, 부모급여, 아동수당 등 출산 시 받을 수 있는 정부 지원금 총액을 계산합니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V3FZTLEP4M"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V3FZTLEP4M');
+</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg: #0f1117; --card: #1a1d27; --border: #2e3347; --accent: #f472b6; --text: #f0f2ff; --muted: #8892aa; --green: #34d399; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 30px 16px 60px; }
+  .back { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; text-decoration: none; margin-bottom: 24px; }
+  .back:hover { color: var(--accent); }
+  .wrap { max-width: 500px; margin: 0 auto; }
+  h1 { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
+  h1 span { color: var(--accent); }
+  .sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 22px; margin-bottom: 14px; }
+  label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 10px; }
+  select { width: 100%; background: #0f1117; border: 1.5px solid var(--border); border-radius: 10px; color: var(--text); font-size: 15px; padding: 11px 14px; font-family: 'Noto Sans KR', sans-serif; outline: none; cursor: pointer; margin-bottom: 12px; }
+  select:focus { border-color: var(--accent); }
+  select:last-child { margin-bottom: 0; }
+  .check-group { display: flex; flex-direction: column; gap: 10px; }
+  .check-item { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  .check-item input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
+  .check-item span { font-size: 14px; color: var(--text); }
+  .check-item small { font-size: 12px; color: var(--muted); display: block; }
+
+  .result-main { background: linear-gradient(135deg, #2a0a1a, #1a1d27); border: 1px solid rgba(244,114,182,0.3); border-radius: 18px; padding: 28px 24px; margin-bottom: 14px; text-align: center; }
+  .result-label { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .result-amount { font-size: 40px; font-weight: 900; color: var(--accent); letter-spacing: -1px; }
+  .result-sub { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+  .benefit-list { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 18px 22px; margin-bottom: 14px; }
+  .benefit-list h3 { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 14px; }
+  .b-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .b-row:last-child { border-bottom: none; }
+  .b-left { display: flex; align-items: center; gap: 8px; }
+  .b-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+  .b-dot.inactive { background: var(--border); }
+  .b-name { font-size: 13px; color: var(--text); }
+  .b-period { font-size: 11px; color: var(--muted); }
+  .b-amount { font-size: 14px; font-weight: 700; color: var(--green); }
+  .b-amount.inactive { color: var(--muted); }
+
+  .total-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0 0; border-top: 1px solid var(--border); margin-top: 4px; }
+  .total-row .lbl { font-size: 14px; font-weight: 700; color: var(--text); }
+  .total-row .val { font-size: 18px; font-weight: 900; color: var(--accent); }
+
+  .info-box { background: rgba(244,114,182,0.08); border: 1px solid rgba(244,114,182,0.2); border-radius: 12px; padding: 14px 16px; font-size: 12px; color: var(--muted); line-height: 1.8; margin-bottom: 14px; }
+  .notice { font-size: 11px; color: var(--muted); line-height: 1.7; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 계산기 목록으로</a>
+  <h1>🍼 <span>출산지원금</span> 계산기</h1>
+  <p class="sub">2024년 기준 출산 시 받을 수 있는 정부 지원금 총액을 계산합니다</p>
+
+  <div class="card">
+    <label>출산 자녀 순서</label>
+    <select id="child-order" onchange="calc()">
+      <option value="1">첫째</option>
+      <option value="2">둘째</option>
+      <option value="3">셋째 이상</option>
+    </select>
+    <label>아이 나이 (현재 기준)</label>
+    <select id="child-age" onchange="calc()">
+      <option value="0">0개월 (출산 예정·신생아)</option>
+      <option value="3">3개월</option>
+      <option value="6">6개월</option>
+      <option value="12">12개월 (1세)</option>
+      <option value="24">24개월 (2세)</option>
+      <option value="36">36개월 (3세) 이상</option>
+    </select>
+  </div>
+
+  <div class="card">
+    <label>해당 항목 선택</label>
+    <div class="check-group">
+      <label class="check-item"><input type="checkbox" id="chk-welcome" checked onchange="calc()"><span>첫만남이용권 수령 예정<small>출생 후 1회성 바우처 지급</small></span></label>
+      <label class="check-item"><input type="checkbox" id="chk-parent" checked onchange="calc()"><span>부모급여 수령 예정<small>만 0~1세 대상 월 지급</small></span></label>
+      <label class="check-item"><input type="checkbox" id="chk-child" checked onchange="calc()"><span>아동수당 수령 예정<small>만 8세 미만 월 10만원</small></span></label>
+      <label class="check-item"><input type="checkbox" id="chk-care" onchange="calc()"><span>영아수당·보육료 지원<small>어린이집 이용 시</small></span></label>
+    </div>
+  </div>
+
+  <div class="result-main">
+    <div class="result-label">예상 총 지원금 (2년 기준)</div>
+    <div class="result-amount" id="total-result">— 원</div>
+    <div class="result-sub" id="total-sub">항목을 선택하세요</div>
+  </div>
+
+  <div class="benefit-list">
+    <h3>항목별 지원금 내역</h3>
+    <div class="b-row" id="row-welcome">
+      <div class="b-left"><div class="b-dot" id="dot-welcome"></div><div><div class="b-name">첫만남이용권</div><div class="b-period">출생 후 1회 바우처</div></div></div>
+      <div class="b-amount" id="amt-welcome">—</div>
+    </div>
+    <div class="b-row" id="row-parent">
+      <div class="b-left"><div class="b-dot" id="dot-parent"></div><div><div class="b-name">부모급여</div><div class="b-period" id="period-parent">만 0세 월 100만 / 만 1세 월 50만</div></div></div>
+      <div class="b-amount" id="amt-parent">—</div>
+    </div>
+    <div class="b-row" id="row-child">
+      <div class="b-left"><div class="b-dot" id="dot-child"></div><div><div class="b-name">아동수당</div><div class="b-period">만 8세 미만 월 10만원</div></div></div>
+      <div class="b-amount" id="amt-child">—</div>
+    </div>
+    <div class="b-row" id="row-care">
+      <div class="b-left"><div class="b-dot" id="dot-care"></div><div><div class="b-name">보육료 지원 (어린이집)</div><div class="b-period">만 0~2세 보육료 전액 지원</div></div></div>
+      <div class="b-amount" id="amt-care">—</div>
+    </div>
+    <div class="total-row">
+      <span class="lbl">2년 합계</span>
+      <span class="val" id="list-total">—</span>
+    </div>
+  </div>
+
+  <div class="info-box">
+    💡 <b style="color:var(--accent)">2024년 기준 주요 변경사항</b><br>
+    • 부모급여: 만 0세 월 100만원, 만 1세 월 50만원으로 인상<br>
+    • 첫만남이용권: 첫째 200만원, 둘째 이상 300만원<br>
+    • 아동수당: 만 8세 미만 월 10만원 (변동 없음)
+  </div>
+
+  <p class="notice">※ 지원금은 소득·재산 기준 없이 지급되나 일부 항목은 조건이 있습니다.<br>정확한 내용은 복지로(www.bokjiro.go.kr)에서 확인하세요.</p>
+</div>
+<script>
+function fmt(n) { return Math.round(n).toLocaleString('ko-KR') + ' 원'; }
+function calc() {
+  const order = parseInt(document.getElementById('child-order').value);
+  const ageMonth = parseInt(document.getElementById('child-age').value);
+  const chkWelcome = document.getElementById('chk-welcome').checked;
+  const chkParent = document.getElementById('chk-parent').checked;
+  const chkChild = document.getElementById('chk-child').checked;
+  const chkCare = document.getElementById('chk-care').checked;
+
+  // 첫만남이용권
+  const welcomeAmt = order === 1 ? 2000000 : 3000000;
+
+  // 부모급여 (2년치 계산 - 현재 나이 기준 남은 기간)
+  let parentAmt = 0;
+  const remainAge0 = Math.max(0, 12 - ageMonth); // 만 0세 남은 개월
+  const remainAge1 = Math.max(0, 24 - Math.max(ageMonth, 12)); // 만 1세 남은 개월
+  parentAmt = remainAge0 * 1000000 + remainAge1 * 500000;
+
+  // 아동수당 (2년 = 24개월 기준, 만 8세 미만)
+  const childMonths = Math.max(0, Math.min(24, 96 - ageMonth));
+  const childAmt = childMonths * 100000;
+
+  // 보육료 (어린이집, 만 0세 514,000 / 만 1~2세 452,000 기준 간이)
+  const careAmt = remainAge0 * 514000 + Math.max(0, 24-Math.max(ageMonth,12)) * 452000;
+
+  const items = [
+    { id: 'welcome', active: chkWelcome, amt: chkWelcome ? welcomeAmt : 0, label: fmt(welcomeAmt) },
+    { id: 'parent', active: chkParent, amt: chkParent ? parentAmt : 0, label: fmt(parentAmt) },
+    { id: 'child', active: chkChild, amt: chkChild ? childAmt : 0, label: fmt(childAmt) },
+    { id: 'care', active: chkCare, amt: chkCare ? careAmt : 0, label: fmt(careAmt) },
+  ];
+
+  let total = 0;
+  items.forEach(item => {
+    total += item.amt;
+    document.getElementById('dot-'+item.id).className = 'b-dot' + (item.active ? '' : ' inactive');
+    document.getElementById('amt-'+item.id).className = 'b-amount' + (item.active ? '' : ' inactive');
+    document.getElementById('amt-'+item.id).textContent = item.active ? item.label : '미선택';
+  });
+
+  document.getElementById('total-result').textContent = fmt(total);
+  document.getElementById('total-sub').textContent = `첫째 기준 2년간 예상 총액 (현재 나이 ${ageMonth}개월 기준)`;
+  document.getElementById('list-total').textContent = fmt(total);
+}
+calc();
+</script>
+</body>
+</html>

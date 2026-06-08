@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>예적금 이자 계산기 | 단리 복리 세후 이자 계산</title>
+<meta name="description" content="예금·적금 금액과 금리를 입력하면 단리·복리 이자와 이자소득세 15.4% 공제 후 실수령액을 계산합니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V3FZTLEP4M"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V3FZTLEP4M');
+</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg: #0f1117; --card: #1a1d27; --border: #2e3347; --accent: #34d399; --text: #f0f2ff; --muted: #8892aa; --red: #f87171; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 30px 16px 60px; }
+  .back { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; text-decoration: none; margin-bottom: 24px; transition: color 0.2s; }
+  .back:hover { color: var(--accent); }
+  .wrap { max-width: 500px; margin: 0 auto; }
+  h1 { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
+  h1 span { color: var(--accent); }
+  .sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+  .tab-wrap { display: flex; border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+  .tab-btn { flex: 1; padding: 12px 0; font-size: 13px; font-weight: 700; border: none; background: var(--card); color: var(--muted); cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all 0.2s; }
+  .tab-btn.active { background: var(--accent); color: #000; }
+  .tab-btn:first-child { border-right: 1.5px solid var(--border); }
+  .panel { display: none; } .panel.active { display: block; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 22px; margin-bottom: 14px; }
+  label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+  .input-row { display: flex; align-items: center; }
+  input[type=number] { flex: 1; background: #0f1117; border: 1.5px solid var(--border); border-radius: 10px 0 0 10px; color: var(--text); font-size: 16px; font-weight: 500; padding: 11px 14px; font-family: 'Noto Sans KR', sans-serif; outline: none; transition: border-color 0.2s; }
+  input[type=number]:focus { border-color: var(--accent); }
+  .unit { background: #1e2235; border: 1.5px solid var(--border); border-left: none; border-radius: 0 10px 10px 0; padding: 11px 14px; font-size: 13px; color: var(--muted); white-space: nowrap; }
+  input[type=range] { width: 100%; -webkit-appearance: none; height: 4px; border-radius: 99px; background: var(--border); margin-top: 10px; cursor: pointer; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+  .range-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 5px; }
+  .result-main { background: linear-gradient(135deg, #0a2a1a, #1a1d27); border: 1px solid rgba(52,211,153,0.3); border-radius: 18px; padding: 24px; margin-bottom: 14px; text-align: center; }
+  .result-label { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .result-amount { font-size: 38px; font-weight: 900; color: var(--accent); letter-spacing: -1px; }
+  .result-sub { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .summary { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 18px 22px; margin-bottom: 14px; }
+  .summary h3 { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 12px; }
+  .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .row:last-child { border-bottom: none; }
+  .row .lbl { color: var(--muted); }
+  .row .val { font-weight: 700; }
+  .row.total .lbl { color: var(--text); font-weight: 700; }
+  .row.total .val { color: var(--accent); font-size: 16px; }
+  .notice { font-size: 11px; color: var(--muted); line-height: 1.7; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 계산기 목록으로</a>
+  <h1>🏦 <span>예·적금 이자</span> 계산기</h1>
+  <p class="sub">세전 이자와 이자소득세(15.4%) 공제 후 실수령 이자를 계산합니다</p>
+  <div class="tab-wrap">
+    <button class="tab-btn active" onclick="switchTab('deposit')">💰 예금 (거치식)</button>
+    <button class="tab-btn" onclick="switchTab('saving')">📅 적금 (적립식)</button>
+  </div>
+  <!-- 예금 -->
+  <div class="panel active" id="panel-deposit">
+    <div class="card">
+      <label>예치 금액</label>
+      <div class="input-row"><input type="number" id="d-amount" placeholder="10000000" oninput="calcDeposit()"><span class="unit">원</span></div>
+      <input type="range" id="d-slider" min="1000000" max="100000000" step="1000000" value="10000000" oninput="document.getElementById('d-amount').value=this.value; calcDeposit()">
+      <div class="range-labels"><span>100만</span><span>5,000만</span><span>1억</span></div>
+    </div>
+    <div class="card">
+      <label>연 금리 (%)</label>
+      <div class="input-row"><input type="number" id="d-rate" placeholder="3.5" step="0.1" oninput="calcDeposit()"><span class="unit">%</span></div>
+      <input type="range" id="d-rate-slider" min="0.1" max="10" step="0.1" value="3.5" oninput="document.getElementById('d-rate').value=this.value; calcDeposit()">
+      <div class="range-labels"><span>0.1%</span><span>5%</span><span>10%</span></div>
+    </div>
+    <div class="card">
+      <label>예치 기간</label>
+      <div class="input-row"><input type="number" id="d-months" placeholder="12" oninput="calcDeposit()"><span class="unit">개월</span></div>
+      <input type="range" id="d-months-slider" min="1" max="60" step="1" value="12" oninput="document.getElementById('d-months').value=this.value; calcDeposit()">
+      <div class="range-labels"><span>1개월</span><span>30개월</span><span>60개월</span></div>
+    </div>
+    <div class="result-main">
+      <div class="result-label">세후 실수령 이자</div>
+      <div class="result-amount" id="d-result">— 원</div>
+      <div class="result-sub" id="d-sub"></div>
+    </div>
+    <div class="summary" id="d-summary" style="display:none">
+      <h3>상세 내역</h3>
+      <div class="row"><span class="lbl">예치 원금</span><span class="val" id="ds-principal">—</span></div>
+      <div class="row"><span class="lbl">세전 이자</span><span class="val" id="ds-gross">—</span></div>
+      <div class="row"><span class="lbl">이자소득세 (15.4%)</span><span class="val" style="color:var(--red)" id="ds-tax">—</span></div>
+      <div class="row total"><span class="lbl">세후 이자</span><span class="val" id="ds-net">—</span></div>
+      <div class="row total"><span class="lbl">만기 수령 총액</span><span class="val" id="ds-total">—</span></div>
+    </div>
+  </div>
+  <!-- 적금 -->
+  <div class="panel" id="panel-saving">
+    <div class="card">
+      <label>월 납입금</label>
+      <div class="input-row"><input type="number" id="s-amount" placeholder="500000" oninput="calcSaving()"><span class="unit">원</span></div>
+      <input type="range" id="s-slider" min="10000" max="5000000" step="10000" value="500000" oninput="document.getElementById('s-amount').value=this.value; calcSaving()">
+      <div class="range-labels"><span>1만</span><span>250만</span><span>500만</span></div>
+    </div>
+    <div class="card">
+      <label>연 금리 (%)</label>
+      <div class="input-row"><input type="number" id="s-rate" placeholder="4.0" step="0.1" oninput="calcSaving()"><span class="unit">%</span></div>
+      <input type="range" id="s-rate-slider" min="0.1" max="10" step="0.1" value="4.0" oninput="document.getElementById('s-rate').value=this.value; calcSaving()">
+      <div class="range-labels"><span>0.1%</span><span>5%</span><span>10%</span></div>
+    </div>
+    <div class="card">
+      <label>적금 기간</label>
+      <div class="input-row"><input type="number" id="s-months" placeholder="12" oninput="calcSaving()"><span class="unit">개월</span></div>
+      <input type="range" id="s-months-slider" min="1" max="60" step="1" value="12" oninput="document.getElementById('s-months').value=this.value; calcSaving()">
+      <div class="range-labels"><span>1개월</span><span>30개월</span><span>60개월</span></div>
+    </div>
+    <div class="result-main">
+      <div class="result-label">세후 실수령 이자</div>
+      <div class="result-amount" id="s-result">— 원</div>
+      <div class="result-sub" id="s-sub"></div>
+    </div>
+    <div class="summary" id="s-summary" style="display:none">
+      <h3>상세 내역</h3>
+      <div class="row"><span class="lbl">총 납입 원금</span><span class="val" id="ss-principal">—</span></div>
+      <div class="row"><span class="lbl">세전 이자</span><span class="val" id="ss-gross">—</span></div>
+      <div class="row"><span class="lbl">이자소득세 (15.4%)</span><span class="val" style="color:var(--red)" id="ss-tax">—</span></div>
+      <div class="row total"><span class="lbl">세후 이자</span><span class="val" id="ss-net">—</span></div>
+      <div class="row total"><span class="lbl">만기 수령 총액</span><span class="val" id="ss-total">—</span></div>
+    </div>
+  </div>
+  <p class="notice">※ 이자소득세 14% + 지방소득세 1.4% = 15.4% 적용<br>비과세 상품(ISA 등)은 실제 세금이 다를 수 있습니다.</p>
+</div>
+<script>
+function fmt(n) { return Math.round(n).toLocaleString('ko-KR') + ' 원'; }
+function switchTab(t) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (t==='deposit'&&i===0)||(t==='saving'&&i===1)));
+  document.getElementById('panel-deposit').classList.toggle('active', t==='deposit');
+  document.getElementById('panel-saving').classList.toggle('active', t==='saving');
+}
+function calcDeposit() {
+  const p = parseFloat(document.getElementById('d-amount').value)||0;
+  const r = parseFloat(document.getElementById('d-rate').value)||0;
+  const m = parseFloat(document.getElementById('d-months').value)||0;
+  if (!p||!r||!m) return;
+  const gross = p * (r/100) * (m/12);
+  const tax = gross * 0.154;
+  const net = gross - tax;
+  document.getElementById('d-result').textContent = fmt(net);
+  document.getElementById('d-sub').textContent = `세전 이자 ${fmt(gross)} - 세금 ${fmt(tax)}`;
+  document.getElementById('d-summary').style.display = 'block';
+  document.getElementById('ds-principal').textContent = fmt(p);
+  document.getElementById('ds-gross').textContent = fmt(gross);
+  document.getElementById('ds-tax').textContent = '- ' + fmt(tax);
+  document.getElementById('ds-net').textContent = fmt(net);
+  document.getElementById('ds-total').textContent = fmt(p + net);
+}
+function calcSaving() {
+  const m = parseFloat(document.getElementById('s-amount').value)||0;
+  const r = parseFloat(document.getElementById('s-rate').value)||0;
+  const months = parseFloat(document.getElementById('s-months').value)||0;
+  if (!m||!r||!months) return;
+  const monthlyRate = r/100/12;
+  let gross = 0;
+  for (let i = 1; i <= months; i++) gross += m * monthlyRate * (months - i + 1);
+  const tax = gross * 0.154;
+  const net = gross - tax;
+  const principal = m * months;
+  document.getElementById('s-result').textContent = fmt(net);
+  document.getElementById('s-sub').textContent = `세전 이자 ${fmt(gross)} - 세금 ${fmt(tax)}`;
+  document.getElementById('s-summary').style.display = 'block';
+  document.getElementById('ss-principal').textContent = fmt(principal);
+  document.getElementById('ss-gross').textContent = fmt(gross);
+  document.getElementById('ss-tax').textContent = '- ' + fmt(tax);
+  document.getElementById('ss-net').textContent = fmt(net);
+  document.getElementById('ss-total').textContent = fmt(principal + net);
+}
+document.getElementById('d-amount').value = 10000000;
+document.getElementById('d-rate').value = 3.5;
+document.getElementById('d-months').value = 12;
+document.getElementById('s-amount').value = 500000;
+document.getElementById('s-rate').value = 4.0;
+document.getElementById('s-months').value = 12;
+calcDeposit(); calcSaving();
+</script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>자동차 취득세 계산기 | 신차 중고차 등록세 계산</title>
+<meta name="description" content="차량 구입가를 입력하면 취득세·등록세·공채 등 자동차 구입 시 납부할 세금을 계산합니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V3FZTLEP4M"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V3FZTLEP4M');
+</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg: #0f1117; --card: #1a1d27; --border: #2e3347; --accent: #f59e0b; --text: #f0f2ff; --muted: #8892aa; --red: #f87171; --green: #34d399; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 30px 16px 60px; }
+  .back { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; text-decoration: none; margin-bottom: 24px; }
+  .back:hover { color: var(--accent); }
+  .wrap { max-width: 500px; margin: 0 auto; }
+  h1 { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
+  h1 span { color: var(--accent); }
+  .sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+  .tab-wrap { display: flex; border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+  .tab-btn { flex: 1; padding: 12px 0; font-size: 13px; font-weight: 700; border: none; background: var(--card); color: var(--muted); cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all 0.2s; }
+  .tab-btn.active { background: var(--accent); color: #000; }
+  .tab-btn:not(:last-child) { border-right: 1.5px solid var(--border); }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 22px; margin-bottom: 14px; }
+  label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+  .input-row { display: flex; align-items: center; }
+  input[type=number] { flex: 1; background: #0f1117; border: 1.5px solid var(--border); border-radius: 10px 0 0 10px; color: var(--text); font-size: 16px; font-weight: 500; padding: 11px 14px; font-family: 'Noto Sans KR', sans-serif; outline: none; transition: border-color 0.2s; }
+  input[type=number]:focus { border-color: var(--accent); }
+  .unit { background: #1e2235; border: 1.5px solid var(--border); border-left: none; border-radius: 0 10px 10px 0; padding: 11px 14px; font-size: 13px; color: var(--muted); }
+  select { width: 100%; background: #0f1117; border: 1.5px solid var(--border); border-radius: 10px; color: var(--text); font-size: 15px; padding: 11px 14px; font-family: 'Noto Sans KR', sans-serif; outline: none; cursor: pointer; }
+  select:focus { border-color: var(--accent); }
+  input[type=range] { width: 100%; -webkit-appearance: none; height: 4px; border-radius: 99px; background: var(--border); margin-top: 10px; cursor: pointer; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+  .range-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 5px; }
+  .result-main { background: linear-gradient(135deg, #2a1f0a, #1a1d27); border: 1px solid rgba(245,158,11,0.3); border-radius: 18px; padding: 24px; margin-bottom: 14px; text-align: center; }
+  .result-label { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .result-amount { font-size: 38px; font-weight: 900; color: var(--accent); letter-spacing: -1px; }
+  .summary { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 18px 22px; margin-bottom: 14px; }
+  .summary h3 { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 12px; }
+  .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .row:last-child { border-bottom: none; }
+  .row .lbl { color: var(--muted); }
+  .row .val { font-weight: 700; }
+  .row.total .lbl { color: var(--text); font-weight: 700; }
+  .row.total .val { color: var(--accent); font-size: 16px; }
+  .eco-badge { background: rgba(52,211,153,0.15); color: var(--green); font-size: 12px; padding: 4px 10px; border-radius: 99px; display: inline-block; margin-top: 8px; }
+  .notice { font-size: 11px; color: var(--muted); line-height: 1.7; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 계산기 목록으로</a>
+  <h1>🚗 <span>자동차 취득세</span> 계산기</h1>
+  <p class="sub">차량 구입가 기준 취득세와 등록 비용을 계산합니다 (2024년 기준)</p>
+  <div class="tab-wrap">
+    <button class="tab-btn active" onclick="switchTab('new')">신차</button>
+    <button class="tab-btn" onclick="switchTab('used')">중고차</button>
+    <button class="tab-btn" onclick="switchTab('eco')">전기·수소차</button>
+  </div>
+
+  <div class="card">
+    <label id="price-label">차량 구입가 (공급가액 기준)</label>
+    <div class="input-row"><input type="number" id="car-price" placeholder="30000000" oninput="calc()"><span class="unit">원</span></div>
+    <input type="range" id="price-slider" min="5000000" max="200000000" step="1000000" value="30000000" oninput="document.getElementById('car-price').value=this.value; calc()">
+    <div class="range-labels"><span>500만</span><span>1억</span><span>2억</span></div>
+  </div>
+
+  <div class="card" id="region-card">
+    <label>등록 지역</label>
+    <select id="region" onchange="calc()">
+      <option value="seoul">서울특별시</option>
+      <option value="gyeonggi">경기도</option>
+      <option value="other">그 외 지역</option>
+    </select>
+  </div>
+
+  <div class="result-main">
+    <div class="result-label">예상 취득세</div>
+    <div class="result-amount" id="tax-result">— 원</div>
+    <div class="eco-badge" id="eco-badge" style="display:none">친환경차 취득세 감면 적용</div>
+  </div>
+
+  <div class="summary" id="summary" style="display:none">
+    <h3>세금 상세 내역</h3>
+    <div class="row"><span class="lbl">차량 가격</span><span class="val" id="s-price">—</span></div>
+    <div class="row"><span class="lbl">취득세율</span><span class="val" id="s-rate">—</span></div>
+    <div class="row"><span class="lbl">취득세</span><span class="val" id="s-tax">—</span></div>
+    <div class="row"><span class="lbl">공채 매입 (지역채)</span><span class="val" id="s-bond">—</span></div>
+    <div class="row"><span class="lbl">번호판·기타 제비용 (약)</span><span class="val">100,000 원</span></div>
+    <div class="row total"><span class="lbl">총 예상 부대비용</span><span class="val" id="s-total">—</span></div>
+  </div>
+  <p class="notice">※ 공채 매입액은 지역·차종에 따라 다릅니다. 간이 계산용 참고치입니다.<br>정확한 금액은 딜러사 또는 구청에서 확인하세요.</p>
+</div>
+<script>
+let mode = 'new';
+function fmt(n) { return Math.round(n).toLocaleString('ko-KR') + ' 원'; }
+function switchTab(t) {
+  mode = t;
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (['new','used','eco'][i])===t));
+  document.getElementById('price-label').textContent = t === 'used' ? '중고차 취득가액' : '차량 구입가 (공급가액 기준)';
+  document.getElementById('eco-badge').style.display = t === 'eco' ? 'inline-block' : 'none';
+  calc();
+}
+function calc() {
+  const price = parseFloat(document.getElementById('car-price').value)||0;
+  const region = document.getElementById('region').value;
+  if (!price) return;
+  document.getElementById('price-slider').value = Math.min(Math.max(price,5000000),200000000);
+
+  let rate, taxRate;
+  if (mode === 'new') { rate = '7%'; taxRate = 0.07; }
+  else if (mode === 'used') { rate = '7%'; taxRate = 0.07; }
+  else { rate = '취득세 감면 (최대 140만원)'; taxRate = 0.07; }
+
+  let tax = price * taxRate;
+  if (mode === 'eco') tax = Math.max(tax - 1400000, 0);
+
+  // 공채 매입 (지역별 간이 계산)
+  const bondRate = region === 'seoul' ? 0.12 : region === 'gyeonggi' ? 0.09 : 0.06;
+  const bond = price * bondRate;
+  const total = tax + bond + 100000;
+
+  document.getElementById('tax-result').textContent = fmt(tax);
+  document.getElementById('summary').style.display = 'block';
+  document.getElementById('s-price').textContent = fmt(price);
+  document.getElementById('s-rate').textContent = mode === 'eco' ? '7% (최대 140만원 감면)' : rate;
+  document.getElementById('s-tax').textContent = fmt(tax);
+  document.getElementById('s-bond').textContent = fmt(bond);
+  document.getElementById('s-total').textContent = fmt(total);
+}
+document.getElementById('car-price').value = 30000000;
+calc();
+</script>
+</body>
+</html>
