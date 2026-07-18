@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10억 모으기 시뮬레이션 | 투자 전략 게임</title>
+<meta name="description" content="적금·ETF·주식 비율을 바꿔가며 10억을 가장 빨리 모으는 최적의 투자 전략을 찾아보세요.">
+
+<!-- ✅ Google AdSense 코드 (심사 통과 후 아래 주석 해제) -->
+<!--
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6685782149988736"
+     crossorigin="anonymous"></script>
+-->
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d27;
+    --card2: #22263a;
+    --border: #2e3347;
+    --text: #f0f2ff;
+    --muted: #8892aa;
+    --blue: #4f8ef7;
+    --purple: #a78bfa;
+    --green: #34d399;
+    --amber: #f59e0b;
+    --orange: #fb923c;
+    --yellow: #facc15;
+    --red: #ef4444;
+  }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* ─── 헤더 ─── */
+  .site-header {
+    text-align: center;
+    padding: 28px 20px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .site-header a {
+    text-decoration: none;
+    color: var(--blue);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  /* ─── 메인 래퍼 ─── */
+  .main {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+  }
+
+  /* ─── 게임 헤더 ─── */
+  .game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  .game-title { font-size: 15px; color: var(--blue); font-weight: 700; }
+  .game-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+  .reset-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    color: var(--muted);
+    font-size: 11px;
+    padding: 5px 10px;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-left: 8px;
+    font-family: inherit;
+    transition: background 0.2s;
+  }
+  .reset-btn:hover { background: var(--border); }
+
+  /* ─── 시간 배지 ─── */
+  .time-badge {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  .time-badge-inner {
+    display: inline-flex;
+    gap: 12px;
+    background: var(--card);
+    border-radius: 8px;
+    padding: 5px 14px;
+    align-items: center;
+    font-size: 10px;
+  }
+
+  /* ─── 총자산 ─── */
+  .total-assets { text-align: center; margin-bottom: 8px; }
+  .total-num { font-size: 32px; font-weight: 700; color: var(--yellow); }
+  .total-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+  .progress-wrap {
+    background: var(--card);
+    border-radius: 5px;
+    height: 7px;
+    margin-bottom: 3px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue), var(--purple));
+    transition: width 0.4s;
+  }
+  .progress-pct { font-size: 10px; color: var(--muted); text-align: right; margin-bottom: 12px; }
+
+  /* ─── 자산 카드 ─── */
+  .asset-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .asset-card {
+    border-radius: 11px;
+    padding: 13px;
+  }
+  .asset-label { font-size: 10px; margin-bottom: 4px; }
+  .asset-label span { opacity: 0.6; }
+  .asset-value { font-size: 20px; font-weight: 700; line-height: 1; }
+  .asset-change {
+    font-size: 10px;
+    margin-top: 5px;
+    padding-top: 5px;
+  }
+
+  .card-cash { background: #1e2235; border: 1px solid var(--border); }
+  .card-cash .asset-label { color: var(--muted); }
+  .card-cash .asset-value { color: var(--text); }
+  .card-cash .asset-change { border-top: 1px solid var(--border); }
+
+  .card-savings { background: #0d1e35; border: 2px solid var(--blue); }
+  .card-savings .asset-label { color: var(--blue); }
+  .card-savings .asset-value { color: var(--blue); }
+  .card-savings .asset-change { border-top: 1px solid #1a3050; color: var(--blue); opacity: 0.8; }
+
+  .card-etf { background: #0a2018; border: 2px solid var(--green); }
+  .card-etf .asset-label { color: var(--green); }
+  .card-etf .asset-value { color: var(--green); }
+  .card-etf .asset-change { border-top: 1px solid #0f3020; }
+
+  .card-stocks { background: #231500; border: 2px solid var(--amber); }
+  .card-stocks .asset-label { color: var(--amber); }
+  .card-stocks .asset-value { color: var(--amber); }
+  .card-stocks .asset-change { border-top: 1px solid #3a2200; }
+
+  .reinvest-btn {
+    width: 100%;
+    margin-top: 8px;
+    padding: 6px;
+    background: #0f1a2a;
+    border: 1px solid var(--blue);
+    border-radius: 7px;
+    color: var(--blue);
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+  }
+  .reinvest-btn:hover { background: #1a2a3a; }
+
+  /* ─── 이벤트 박스 ─── */
+  .event-box {
+    border-radius: 8px;
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* ─── 보너스 안내 ─── */
+  .bonus-hint {
+    background: var(--card);
+    border-radius: 6px;
+    padding: 5px 12px;
+    margin-bottom: 12px;
+    font-size: 10px;
+    color: var(--yellow);
+    text-align: center;
+  }
+
+  /* ─── 설정 + 배분 ─── */
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .section-title { font-size: 10px; color: var(--muted); font-weight: 700; margin-bottom: 8px; }
+
+  .slider-row { margin-bottom: 9px; }
+  .slider-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2px;
+    font-size: 10px;
+  }
+  .slider-range { font-size: 9px; color: #555; margin-top: 1px; }
+
+  input[type=range] { width: 100%; cursor: pointer; }
+
+  .invest-summary {
+    background: var(--card);
+    border-radius: 7px;
+    padding: 7px 10px;
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* ─── 다음 달 버튼 ─── */
+  .next-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--blue);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .next-btn:hover { background: #3a7be0; }
+  .next-btn:active { transform: scale(0.98); }
+
+  /* ─── 광고 화면 공통 ─── */
+  .ad-box {
+    border-radius: 12px;
+    padding: 22px;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .ad-box-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .ad-box-sub { font-size: 10px; color: var(--muted); margin-bottom: 16px; }
+
+  /* 광고 선택 옵션 */
+  .ad-option {
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+  }
+  .ad-option:hover { border-color: var(--yellow); background: #1e1a00; }
+  .ad-option.recommended { border-color: var(--yellow); background: #1e1a00; }
+  .ad-option:active { transform: scale(0.98); }
+  .ad-opt-left h3 { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+  .ad-opt-left p { font-size: 10px; color: var(--muted); }
+  .ad-opt-right .reward { font-size: 22px; font-weight: 700; color: var(--yellow); }
+  .ad-opt-right .reward-label { font-size: 10px; color: var(--muted); }
+
+  /* 광고 영역 플레이스홀더 */
+  .ad-area {
+    background: #0a0d14;
+    border: 1.5px dashed var(--border);
+    border-radius: 8px;
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+    padding: 16px;
+  }
+  .ad-area-icon { font-size: 22px; }
+  .ad-area-label { font-size: 12px; color: var(--blue); font-weight: 600; }
+  .ad-area-sub { font-size: 10px; color: #2e3347; }
+
+  /* 타이머 */
+  .timer-num { font-size: 36px; font-weight: 700; color: var(--yellow); margin-bottom: 10px; }
+  .timer-bar-wrap { background: #0f1117; border-radius: 6px; height: 8px; margin-bottom: 10px; overflow: hidden; }
+  .timer-bar { height: 100%; background: linear-gradient(90deg, var(--blue), var(--yellow)); transition: width 0.9s linear; }
+  .timer-hint { font-size: 11px; color: var(--muted); }
+
+  /* 완료 화면 */
+  .done-emoji { font-size: 36px; margin-bottom: 8px; }
+  .done-reward { font-size: 30px; font-weight: 700; color: var(--yellow); margin: 10px 0; }
+
+  .claim-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--green);
+    border: none;
+    border-radius: 10px;
+    color: #000;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .claim-btn:hover { background: #28bd87; }
+  .claim-btn:active { transform: scale(0.98); }
+
+  .offer-accept-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--yellow);
+    border: none;
+    border-radius: 10px;
+    color: #000;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    margin-bottom: 8px;
+    transition: background 0.2s;
+  }
+  .offer-accept-btn:hover { background: #e6b800; }
+
+  .offer-decline-btn {
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: #555;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.2s;
+  }
+  .offer-decline-btn:hover { border-color: var(--muted); color: var(--muted); }
+
+  /* 승리 배너 */
+  .win-banner {
+    background: var(--yellow);
+    color: #000;
+    text-align: center;
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  /* 사이트 푸터 */
+  .site-footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
+  .site-footer a { color: var(--muted); text-decoration: none; }
+  .site-footer a:hover { color: var(--text); }
+
+  /* ─── 광고 배너 (애드센스용) ─── */
+  .adsense-banner {
+    margin: 16px 0;
+    text-align: center;
+    min-height: 90px;
+  }
+
+  @media (max-width: 400px) {
+    .total-num { font-size: 26px; }
+    .asset-value { font-size: 17px; }
+    .bottom-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 상단 네비게이션 -->
+<header class="site-header">
+  <a href="/calculator-hub/">✦ Calculator Hub</a>
+</header>
+
+<!-- 게임 본체 -->
+<main class="main" id="game"></main>
+
+<!-- 사이트 푸터 -->
+<footer class="site-footer">
+  <a href="/calculator-hub/">← 계산기 모음으로</a>
+  &nbsp;|&nbsp;
+  <a href="/calculator-hub/privacy.html">개인정보처리방침</a><br>
+  <small style="margin-top:6px;display:block">본 시뮬레이션은 교육·오락 목적이며 실제 투자 수익을 보장하지 않습니다.</small>
+</footer>
+
+<script>
+/* ══════════════════════════════════════════
+   10억 모으기 시뮬레이션
+   ══════════════════════════════════════════ */
+const GOAL = 1000000000; // 10억
+let adTimerInterval = null;
+
+let state = {
+  year:2024, month:1, cash:0, savings:0, etf:0, stocks:0,
+  salary:3000000, expenses:1500000, months:0,
+  evt:null, lastRet:null, won:false,
+  adPhase:null, adReward:0, adMandatory:false,
+  totalAdBonus:0, adCount:0, raiseCount:0
+};
+let alloc = { savings:30, etf:30, stocks:30 };
+
+/* ── 숫자 포맷 ── */
+function fmt(n) {
+  const a = Math.abs(Math.floor(n));
+  let r;
+  if (a >= 1000000000000) r = (a/1000000000000).toFixed(1) + '조원';
+  else if (a >= 100000000)  r = (a/100000000).toFixed(1) + '억원';
+  else if (a >= 10000)      r = Math.round(a/10000) + '만원';
+  else r = a.toLocaleString() + '원';
+  return n < 0 ? '-' + r : r;
+}
+
+function total(s) { return s.cash + s.savings + s.etf + s.stocks; }
+
+/* ── 다음 달 진행 ── */
+function nextMonth() {
+  if (state.won || state.adPhase) return;
+  let s = { ...state };
+
+  // 투자 수익 (ETF: 분배금 자동재투자 = 복리)
+  const savRet = s.savings * 0.0025;
+  const etfRet = s.etf * (0.0058 + (Math.random()-0.5)*0.035);
+  const stRet  = s.stocks * (0.009 + (Math.random()-0.5)*0.07);
+  s.savings += savRet;
+  s.etf     = Math.max(0, s.etf + etfRet);
+  s.stocks  = Math.max(0, s.stocks + stRet);
+
+  // 이번 달 수입 → 배분 (현금 누적 방식)
+  const newMoney = Math.max(0, s.salary - s.expenses);
+  const savAmt = newMoney * alloc.savings / 100;
+  const etfAmt = newMoney * alloc.etf / 100;
+  const stAmt  = newMoney * alloc.stocks / 100;
+  s.savings += savAmt;
+  s.etf     += etfAmt;
+  s.stocks  += stAmt;
+  s.cash    += newMoney - savAmt - etfAmt - stAmt;
+
+  // 이벤트
+  let evt = null;
+  if (s.months > 0 && s.months % 12 === 0) {
+    const old = s.salary;
+    s.salary = Math.floor(s.salary * 1.05 / 10000) * 10000;
+    s.raiseCount++;
+    evt = { type:'raise', msg:`💼 연간 급여 5% 인상! ${fmt(old)} → ${fmt(s.salary)} (${s.raiseCount}회째)` };
+  } else {
+    const r = Math.random();
+    if (r < 0.04) {
+      const b = s.salary * 2; s.cash += b;
+      evt = { type:'bonus', msg:`🎉 특별 보너스! +${fmt(b)}` };
+    } else if (r < 0.07) {
+      s.stocks *= 0.72; s.etf *= 0.87;
+      evt = { type:'crash', msg:`📉 시장 폭락! 주식 -28%, ETF -13%` };
+    } else if (r < 0.10) {
+      s.stocks *= 1.22; s.etf *= 1.13;
+      evt = { type:'boom', msg:`🚀 시장 급등! 주식 +22%, ETF +13%` };
+    }
+  }
+
+  s.month++; if (s.month > 12) { s.month = 1; s.year++; }
+  s.months++;
+  s.evt = evt;
+  s.lastRet = { sav:savRet, etf:etfRet, st:stRet };
+  s.won = total(s) >= GOAL;
+
+  // 6개월: 선택 / 12개월(1년): 필수
+  if (!s.won && s.months > 0 && s.months % 6 === 0) {
+    s.adPhase = 'offer';
+    s.adMandatory = (s.months % 12 === 0);
+  }
+
+  state = s;
+  render();
+}
+
+/* ── 광고 흐름 ── */
+function acceptOffer()  { state.adPhase = 'select'; render(); }
+function declineOffer() { state.adPhase = null; render(); }
+
+function selectAd(type) {
+  const reward = type === 'short' ? 500000 : 1000000;
+  state.adReward = reward;
+  state.adCount++;
+  state.cash += reward;
+  state.totalAdBonus += reward;
+  state.adPhase = 'done';
+  if (total(state) >= GOAL) state.won = true;
+  render();
+}
+
+function resumeGame() { state.adPhase = null; render(); }
+
+/* ── 현금 재투자 ── */
+function reinvestCash() {
+  if (state.cash <= 0) return;
+  let s = { ...state };
+  const ta = alloc.savings + alloc.etf + alloc.stocks;
+  if (ta <= 0) return;
+  s.savings += s.cash * alloc.savings / 100;
+  s.etf     += s.cash * alloc.etf / 100;
+  s.stocks  += s.cash * alloc.stocks / 100;
+  s.cash = Math.max(0, s.cash - s.cash * ta / 100);
+  state = s; render();
+}
+
+/* ── 리셋 ── */
+function resetGame() {
+  clearInterval(adTimerInterval);
+  state = {
+    year:2024, month:1, cash:0, savings:0, etf:0, stocks:0,
+    salary:3000000, expenses:1500000, months:0,
+    evt:null, lastRet:null, won:false,
+    adPhase:null, adReward:0, adMandatory:false,
+    totalAdBonus:0, adCount:0, raiseCount:0
+  };
+  alloc = { savings:30, etf:30, stocks:30 };
+  render();
+}
+
+/* ── 슬라이더 ── */
+function setAlloc(key, val) {
+  const os = Object.keys(alloc).filter(k=>k!==key).reduce((s,k)=>s+alloc[k], 0);
+  alloc[key] = Math.min(+val, 100 - os);
+  render();
+}
+function setSalary(val) {
+  state.salary = +val;
+  if (state.expenses >= state.salary) state.expenses = Math.max(500000, state.salary - 500000);
+  render();
+}
+function setExpenses(val) {
+  state.expenses = Math.min(+val, state.salary - 500000);
+  render();
+}
+
+/* ══════════════════════════════════════════
+   렌더링
+   ══════════════════════════════════════════ */
+function render() {
+  const s = state;
+  const tot = total(s);
+  const prog = Math.min(tot / GOAL * 100, 100);
+  const yrs = Math.floor(s.months / 12);
+  const mos = s.months % 12;
+  const newMoney = Math.max(0, s.salary - s.expenses);
+  const cp = Math.max(0, 100 - alloc.savings - alloc.etf - alloc.stocks);
+  const cashPerMonth = newMoney * cp / 100;
+  const lr = s.lastRet || { sav:0, etf:0, st:0 };
+  const expMax = Math.max(500000, s.salary - 500000);
+
+  const headerHTML = `
+    <div class="game-header">
+      <div>
+        <div class="game-title">💸 10억 모으기 시뮬레이션</div>
+        <div class="game-sub">적금·ETF·주식 비율을 바꿔 최단 기간을 찾아보세요</div>
+      </div>
+      <button class="reset-btn" onclick="resetGame()">↺ 리셋</button>
+    </div>
+    <div class="time-badge">
+      <div class="time-badge-inner">
+        <span style="color:var(--muted)">${s.year}년 ${s.month}월</span>
+        <span style="font-size:12px;font-weight:700;color:var(--purple)">⏱ ${yrs}년 ${mos}개월 경과</span>
+        <span style="color:var(--blue)">급여인상 ${s.raiseCount}회</span>
+      </div>
+    </div>
+    <div class="total-assets">
+      <div class="total-num">${fmt(tot)}</div>
+      <div class="total-sub">목표 10억까지 ${fmt(Math.max(0, GOAL-tot))} 남음</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar" style="width:${prog.toFixed(2)}%"></div>
+    </div>
+    <div class="progress-pct">${prog.toFixed(2)}% 달성</div>`;
+
+  // ── 보너스 오퍼 (6개월: 선택 / 12개월: 필수) ──
+  if (s.adPhase === 'offer') {
+    const isMandatory = s.adMandatory;
+    document.getElementById('game').innerHTML = headerHTML + `
+      <div class="ad-box" style="background:var(--card);border:2px solid var(--yellow)">
+        <div style="font-size:28px;margin-bottom:8px">${isMandatory ? '🎊' : '🎁'}</div>
+        <div class="ad-box-title" style="color:var(--yellow)">
+          ${isMandatory ? '🎊 1년 기념 필수 보너스!' : '6개월 보너스 찬스!'}
+        </div>
+        <div class="ad-box-sub">
+          ${isMandatory
+            ? '1년을 달성했습니다! 보너스를 선택해 받으세요.'
+            : '보너스를 받으시겠어요? 원하지 않으면 넘어갈 수 있어요.'}
+        </div>
+        <button class="offer-accept-btn" onclick="acceptOffer()">🎁 보너스 받기</button>
+        ${!isMandatory ? `<button class="offer-decline-btn" onclick="declineOffer()">괜찮아요, 계속할게요</button>` : ''}
+      </div>`;
+    return;
+  }
+
+  // ── 보너스 선택 ──
+  if (s.adPhase === 'select') {
+    document.getElementById('game').innerHTML = headerHTML + `
+      <div class="ad-box" style="background:var(--card);border:2px solid var(--yellow)">
+        <div class="ad-box-title" style="color:var(--yellow)">보너스를 선택하세요!</div>
+        <div class="ad-box-sub">
+          애드센스 승인 후 광고가 연결되면<br>
+          실제 광고 시청 후 보너스가 지급됩니다
+        </div>
+        <div class="ad-option" onclick="selectAd('short')">
+          <div class="ad-opt-left">
+            <h3>💰 소액 보너스</h3>
+            <p>빠르게 받는 소소한 지원금</p>
+          </div>
+          <div class="ad-opt-right">
+            <div class="reward">+50만원</div>
+            <div class="reward-label">즉시 지급</div>
+          </div>
+        </div>
+        <div class="ad-option recommended" onclick="selectAd('long')">
+          <div class="ad-opt-left">
+            <h3>💎 대액 보너스</h3>
+            <p>더 큰 투자 시드머니!</p>
+          </div>
+          <div class="ad-opt-right">
+            <div class="reward">+100만원</div>
+            <div class="reward-label" style="color:var(--yellow)">🔥 추천</div>
+          </div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  // ── 광고 완료 ──
+  if (s.adPhase === 'done') {
+    document.getElementById('game').innerHTML = headerHTML + `
+      <div class="ad-box" style="background:#0f2518;border:2px solid var(--green)">
+        <div class="done-emoji">🎉</div>
+        <div class="ad-box-title" style="color:var(--green)">광고 시청 완료!</div>
+        <div class="done-reward">+${fmt(s.adReward)}</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:16px">누적 광고 보너스: ${fmt(s.totalAdBonus)}</div>
+        <button class="claim-btn" onclick="resumeGame()">💰 받고 계속하기 →</button>
+      </div>`;
+    return;
+  }
+
+  // ── 메인 게임 화면 ──
+  let evtBg='var(--card)', evtBd='var(--border)', evtC='#444', evtMsg='— 이번 달 특이사항 없음 —';
+  if (s.evt) {
+    evtMsg = s.evt.msg;
+    if (s.evt.type==='crash') { evtBg='#250f0f'; evtBd='var(--red)';    evtC='var(--red)'; }
+    if (s.evt.type==='boom')  { evtBg='#0f2518'; evtBd='var(--green)';  evtC='var(--green)'; }
+    if (s.evt.type==='bonus') { evtBg='#252010'; evtBd='var(--yellow)'; evtC='var(--yellow)'; }
+    if (s.evt.type==='raise') { evtBg='#0f1a2a'; evtBd='var(--blue)';   evtC='var(--blue)'; }
+  }
+
+  const monthsToNext = 6 - (s.months % 6 || 6);
+
+  document.getElementById('game').innerHTML = headerHTML + `
+
+    ${s.won ? `<div class="win-banner">🎉 ${yrs}년 ${mos}개월 만에 10억 달성! 리셋하고 더 빠른 전략을 찾아보세요!</div>` : ''}
+
+    <!-- ✅ 인게임 광고 배너 (배포 시 AdSense 코드 삽입) -->
+    <div class="adsense-banner">
+      <!-- 여기에 AdSense 광고 코드 삽입 -->
+    </div>
+
+    <!-- 자산 카드 -->
+    <div class="asset-grid">
+      <div class="asset-card card-cash">
+        <div class="asset-label">💵 현금 (누적)</div>
+        <div class="asset-value">${fmt(s.cash)}</div>
+        <div class="asset-change" style="color:${cashPerMonth>0?'var(--green)':'#555'}">
+          ${cashPerMonth > 0 ? `매달 +${fmt(cashPerMonth)} 적립` : '전액 투자 배분 중'}
+        </div>
+        ${s.cash >= 100000 ? `<button class="reinvest-btn" onclick="reinvestCash()">🔄 재투자 (${fmt(s.cash)})</button>` : ''}
+      </div>
+
+      <div class="asset-card card-savings">
+        <div class="asset-label">🏦 적금 <span>연 3% 확정</span></div>
+        <div class="asset-value">${fmt(s.savings)}</div>
+        <div class="asset-change">이번 달 +${fmt(lr.sav)}</div>
+      </div>
+
+      <div class="asset-card card-etf">
+        <div class="asset-label">📈 ETF <span>분배금 복리</span></div>
+        <div class="asset-value">${fmt(s.etf)}</div>
+        <div class="asset-change" style="color:${lr.etf>=0?'var(--green)':'var(--red)'}">이번 달 ${lr.etf>=0?'+':''}${fmt(lr.etf)}</div>
+      </div>
+
+      <div class="asset-card card-stocks">
+        <div class="asset-label">📊 주식 <span>고수익 고위험</span></div>
+        <div class="asset-value">${fmt(s.stocks)}</div>
+        <div class="asset-change" style="color:${lr.st>=0?'var(--amber)':'var(--red)'}">이번 달 ${lr.st>=0?'+':''}${fmt(lr.st)}</div>
+      </div>
+    </div>
+
+    <!-- 이벤트 박스 (항상 고정 높이) -->
+    <div class="event-box" style="background:${evtBg};border:1px solid ${evtBd};color:${evtC}">
+      ${evtMsg}
+    </div>
+
+    <!-- 광고 보너스 안내 -->
+    ${!s.won ? `<div class="bonus-hint">🎁 보너스까지 <strong>${monthsToNext}개월</strong> 남음 &nbsp;|&nbsp; 누적 보너스 ${fmt(s.totalAdBonus)}</div>` : ''}
+
+    <!-- 내 상황 + 투자 배분 -->
+    <div class="bottom-grid">
+
+      <div>
+        <div class="section-title">⚙️ 내 상황 설정</div>
+
+        <div class="slider-row">
+          <div class="slider-label">
+            <span style="color:var(--muted)">💼 월급</span>
+            <strong style="color:var(--blue)">${fmt(s.salary)}</strong>
+          </div>
+          <input type="range" min="1000000" max="10000000" step="500000" value="${s.salary}"
+            style="accent-color:var(--blue)"
+            oninput="setSalary(this.value)" onchange="setSalary(this.value)">
+          <div class="slider-range">100만 ~ 1000만원</div>
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-label">
+            <span style="color:var(--muted)">🧾 지출</span>
+            <strong style="color:var(--orange)">${fmt(s.expenses)}</strong>
+          </div>
+          <input type="range" min="500000" max="${expMax}" step="100000" value="${Math.min(s.expenses,expMax)}"
+            style="accent-color:var(--orange)"
+            oninput="setExpenses(this.value)" onchange="setExpenses(this.value)">
+          <div class="slider-range">50만 ~ ${fmt(expMax)}</div>
+        </div>
+
+        <div class="invest-summary">
+          <span style="color:var(--muted)">💰 투자가능</span>
+          <strong style="color:var(--green)">${fmt(newMoney)}/월</strong>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-title">🎯 투자 배분</div>
+
+        ${[['savings','🏦 적금','var(--blue)'],['etf','📈 ETF','var(--green)'],['stocks','📊 주식','var(--amber)']].map(([key,label,color]) => `
+        <div class="slider-row">
+          <div class="slider-label">
+            <span style="font-weight:700;color:${color}">${label}</span>
+            <span style="font-weight:700;color:${color}">${alloc[key]}% · ${fmt(newMoney*alloc[key]/100)}</span>
+          </div>
+          <input type="range" min="0" max="100" step="5" value="${alloc[key]}"
+            style="accent-color:${color}"
+            oninput="setAlloc('${key}',this.value)" onchange="setAlloc('${key}',this.value)">
+        </div>`).join('')}
+
+        <div style="display:flex;justify-content:space-between;font-size:10px;padding:4px 0;border-top:1px solid var(--border)">
+          <span style="color:var(--muted)">💵 현금 적립</span>
+          <span style="color:var(--green);font-weight:600">${cp}% · +${fmt(cashPerMonth)}/월</span>
+        </div>
+      </div>
+
+    </div>
+
+    ${!s.won ? `<button class="next-btn" onclick="nextMonth()">
+      다음 달로 → (${s.month===12?s.year+1:s.year}년 ${s.month===12?1:s.month+1}월)
+    </button>` : ''}
+  `;
+}
+
+// 시작
+render();
+</script>
+</body>
+</html>
