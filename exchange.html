@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V3FZTLEP4M"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-V3FZTLEP4M');</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6685782149988736" crossorigin="anonymous"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>환율 계산기 | Calculator Hub</title>
+<meta name="description" content="원화와 주요 외화를 간편하게 환산하세요.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#34d399}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f1117;--card:#1a1d27;--border:#2a2e42;--text:#f0f2ff;--muted:#7a84a0;--dim:#4a5068}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.site-header{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.site-header a{text-decoration:none;color:var(--muted);font-size:13px}
+.site-header a:hover{color:var(--text)}
+.main{max-width:560px;margin:0 auto;padding:28px 20px 60px}
+h1{font-size:clamp(20px,4vw,28px);font-weight:900;margin-bottom:8px}
+.desc{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:24px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:500}
+.field input,.field select{width:100%;padding:12px 14px;background:#12151f;border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus{border-color:var(--accent)}
+.field select option{background:#1a1d27}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.calc-btn{width:100%;padding:14px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px;transition:opacity .2s}
+.calc-btn:hover{opacity:.88}
+.result-box{background:#12151f;border:1px solid var(--border);border-radius:12px;padding:20px;margin-top:16px;display:none}
+.result-box.show{display:block}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:14px}
+.result-row:last-child{border:none}
+.result-row .label{color:var(--muted)}
+.result-row .value{font-weight:700;font-size:15px;color:var(--accent)}
+.result-main{text-align:center;padding:16px 0 12px;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,.08)}
+.result-main .big{font-size:32px;font-weight:900;color:var(--accent)}
+.result-main .sub{font-size:12px;color:var(--muted);margin-top:4px}
+.note{font-size:11px;color:var(--dim);line-height:1.6;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.05)}
+.tab-wrap{display:flex;gap:6px;margin-bottom:16px}
+.tab-btn{flex:1;padding:9px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--muted);font-size:13px;font-family:inherit;cursor:pointer;transition:all .2s}
+.tab-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.site-footer{text-align:center;padding:20px;font-size:12px;color:var(--dim);border-top:1px solid var(--border)}
+.site-footer a{color:var(--dim);text-decoration:none}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a href="/calculator-hub/">✦ Calculator Hub</a>
+  <span style="color:var(--dim)">›</span>
+  <span style="font-size:13px;color:var(--text)">환율 계산기</span>
+</header>
+<main class="main">
+<h1>💱 환율 계산기</h1>
+<p class="desc">원화 ↔ 주요 외화 즉시 환산. 환율은 직접 입력하거나 기본값을 사용하세요.</p>
+<div class="card">
+  <div class="field"><label>통화 선택</label>
+    <select id="currency" onchange="updateRate()">
+      <option value="USD" data-rate="1350">미국 달러 (USD)</option>
+      <option value="JPY" data-rate="9.2">일본 엔 (JPY) — 100엔 기준</option>
+      <option value="EUR" data-rate="1480">유로 (EUR)</option>
+      <option value="CNY" data-rate="187">중국 위안 (CNY)</option>
+      <option value="GBP" data-rate="1720">영국 파운드 (GBP)</option>
+      <option value="AUD" data-rate="880">호주 달러 (AUD)</option>
+      <option value="CAD" data-rate="990">캐나다 달러 (CAD)</option>
+      <option value="HKD" data-rate="173">홍콩 달러 (HKD)</option>
+      <option value="SGD" data-rate="1020">싱가포르 달러 (SGD)</option>
+      <option value="THB" data-rate="39">태국 바트 (THB)</option>
+    </select>
+  </div>
+  <div class="row2">
+    <div class="field"><label>환율 (원/<span id="unit-label">USD</span>)</label><input id="rate" type="number" value="1350" oninput="calc()"></div>
+    <div class="field" id="jpy-wrap" style="display:none"><label style="color:#f59e0b">※ 100엔 기준 환율</label><div style="padding:12px 0;font-size:13px;color:var(--muted)">위 환율을 100엔 기준으로 입력하세요</div></div>
+  </div>
+  <div class="tab-wrap" style="margin-bottom:16px">
+    <button class="tab-btn active" onclick="setDir('to-krw')">외화 → 원화</button>
+    <button class="tab-btn" onclick="setDir('to-foreign')">원화 → 외화</button>
+  </div>
+  <div class="field"><label id="amount-label">금액 (USD)</label><input id="amount" type="number" placeholder="100" oninput="calc()"></div>
+</div>
+<div class="result-box" id="result">
+  <div class="result-main"><div class="big" id="r-main">0원</div><div class="sub" id="r-sub">환산 금액</div></div>
+  <div class="result-row"><span class="label">입력 금액</span><span class="value" id="r-input">-</span></div>
+  <div class="result-row"><span class="label">적용 환율</span><span class="value" id="r-rate">-</span></div>
+  <div class="result-row"><span class="label">환산 결과</span><span class="value" id="r-result">-</span></div>
+  <p class="note">※ 환율은 실시간이 아닌 참고용 기본값입니다. 정확한 환율은 하나은행·신한은행 등 공식 환율을 확인하세요.</p>
+</div>
+</main>
+<footer class="site-footer">
+  본 계산기는 간편 계산용으로 실제 금액과 차이가 있을 수 있습니다.<br>
+  <a href="/calculator-hub/privacy.html">개인정보처리방침</a>
+</footer>
+<script>
+
+let dir='to-krw';let isJpy=false;
+function updateRate(){
+  const sel=document.getElementById('currency');
+  const opt=sel.options[sel.selectedIndex];
+  const code=opt.value;isJpy=(code==='JPY');
+  document.getElementById('rate').value=opt.dataset.rate;
+  document.getElementById('unit-label').textContent=isJpy?'100'+code:code;
+  document.getElementById('jpy-wrap').style.display=isJpy?'block':'none';
+  document.getElementById('amount-label').textContent='금액 ('+code+')';
+  updateLabels();calc();
+}
+function setDir(d){dir=d;document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===(d==='to-krw'?0:1)));updateLabels();calc();}
+function updateLabels(){
+  const code=document.getElementById('currency').value;
+  if(dir==='to-krw'){document.getElementById('amount-label').textContent='금액 ('+code+')';}
+  else{document.getElementById('amount-label').textContent='금액 (원)';}
+}
+function fmt(n,isKrw){if(isKrw){if(n>=100000000)return(n/100000000).toFixed(1)+'억원';if(n>=10000)return Math.round(n/10000)+'만원';return Math.round(n).toLocaleString()+'원';}return n.toLocaleString(undefined,{maximumFractionDigits:2});}
+function calc(){
+  const r=document.getElementById('result');
+  const rate=parseFloat(document.getElementById('rate').value)||0;
+  const amt=parseFloat(document.getElementById('amount').value)||0;
+  const code=document.getElementById('currency').value;
+  let result,ratePerUnit;
+  if(isJpy){ratePerUnit=rate/100;}else{ratePerUnit=rate;}
+  if(dir==='to-krw'){result=amt*ratePerUnit;document.getElementById('r-main').textContent=fmt(result,true);document.getElementById('r-sub').textContent='원화 환산 금액';document.getElementById('r-input').textContent=amt.toLocaleString()+' '+code;document.getElementById('r-result').textContent=fmt(result,true);}
+  else{result=ratePerUnit>0?amt/ratePerUnit:0;document.getElementById('r-main').textContent=fmt(result,false)+' '+code;document.getElementById('r-sub').textContent='외화 환산 금액';document.getElementById('r-input').textContent=fmt(amt,true);document.getElementById('r-result').textContent=fmt(result,false)+' '+code;}
+  document.getElementById('r-rate').textContent=(isJpy?'100'+code:code)+' = '+rate.toLocaleString()+'원';
+  r.classList.add('show');
+}
+
+</script>
+</body>
+</html>

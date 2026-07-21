@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V3FZTLEP4M"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-V3FZTLEP4M');</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6685782149988736" crossorigin="anonymous"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>부동산 중개수수료 계산기 | Calculator Hub</title>
+<meta name="description" content="매매·전세·월세 거래 시 공인중개사 수수료를 계산하세요.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#f59e0b}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f1117;--card:#1a1d27;--border:#2a2e42;--text:#f0f2ff;--muted:#7a84a0;--dim:#4a5068}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.site-header{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.site-header a{text-decoration:none;color:var(--muted);font-size:13px}
+.site-header a:hover{color:var(--text)}
+.main{max-width:560px;margin:0 auto;padding:28px 20px 60px}
+h1{font-size:clamp(20px,4vw,28px);font-weight:900;margin-bottom:8px}
+.desc{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:24px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:500}
+.field input,.field select{width:100%;padding:12px 14px;background:#12151f;border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus{border-color:var(--accent)}
+.field select option{background:#1a1d27}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.calc-btn{width:100%;padding:14px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px;transition:opacity .2s}
+.calc-btn:hover{opacity:.88}
+.result-box{background:#12151f;border:1px solid var(--border);border-radius:12px;padding:20px;margin-top:16px;display:none}
+.result-box.show{display:block}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:14px}
+.result-row:last-child{border:none}
+.result-row .label{color:var(--muted)}
+.result-row .value{font-weight:700;font-size:15px;color:var(--accent)}
+.result-main{text-align:center;padding:16px 0 12px;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,.08)}
+.result-main .big{font-size:32px;font-weight:900;color:var(--accent)}
+.result-main .sub{font-size:12px;color:var(--muted);margin-top:4px}
+.note{font-size:11px;color:var(--dim);line-height:1.6;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.05)}
+.tab-wrap{display:flex;gap:6px;margin-bottom:16px}
+.tab-btn{flex:1;padding:9px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--muted);font-size:13px;font-family:inherit;cursor:pointer;transition:all .2s}
+.tab-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.site-footer{text-align:center;padding:20px;font-size:12px;color:var(--dim);border-top:1px solid var(--border)}
+.site-footer a{color:var(--dim);text-decoration:none}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a href="/calculator-hub/">✦ Calculator Hub</a>
+  <span style="color:var(--dim)">›</span>
+  <span style="font-size:13px;color:var(--text)">부동산 중개수수료 계산기</span>
+</header>
+<main class="main">
+<h1>🤝 부동산 중개수수료 계산기</h1>
+<p class="desc">2021년 개정 요율 기준. 매매·전세·월세 중개보수 상한액을 계산합니다.</p>
+<div class="card">
+  <div class="tab-wrap">
+    <button class="tab-btn active" onclick="setType('buy')">매매</button>
+    <button class="tab-btn" onclick="setType('rent')">전세</button>
+    <button class="tab-btn" onclick="setType('monthly')">월세</button>
+  </div>
+  <div id="f-buy">
+    <div class="field"><label>매매 금액 (원)</label><input id="buy-price" type="number" placeholder="500000000" oninput="calc()"></div>
+  </div>
+  <div id="f-rent" style="display:none">
+    <div class="field"><label>전세 보증금 (원)</label><input id="rent-price" type="number" placeholder="300000000" oninput="calc()"></div>
+  </div>
+  <div id="f-monthly" style="display:none">
+    <div class="row2">
+      <div class="field"><label>보증금 (원)</label><input id="m-deposit" type="number" placeholder="50000000" oninput="calc()"></div>
+      <div class="field"><label>월세 (원)</label><input id="m-rent" type="number" placeholder="800000" oninput="calc()"></div>
+    </div>
+    <p style="font-size:11px;color:var(--dim);margin-top:4px">거래금액 = 보증금 + 월세×100</p>
+  </div>
+</div>
+<div class="result-box" id="result">
+  <div class="result-main"><div class="big" id="r-main">0원</div><div class="sub">중개보수 상한액 (협의 가능)</div></div>
+  <div class="result-row"><span class="label">거래 금액</span><span class="value" id="r-price">-</span></div>
+  <div class="result-row"><span class="label">적용 요율</span><span class="value" id="r-rate">-</span></div>
+  <div class="result-row"><span class="label">중개보수 상한액</span><span class="value" id="r-fee">-</span></div>
+  <div class="result-row"><span class="label">부가세 10%</span><span class="value" id="r-vat">-</span></div>
+  <div class="result-row"><span class="label">합계</span><span class="value" id="r-total">-</span></div>
+  <p class="note">※ 2021년 10월 이후 개정 요율 기준 | 상한액으로 공인중개사와 협의 가능 | 서울 기준</p>
+</div>
+</main>
+<footer class="site-footer">
+  본 계산기는 간편 계산용으로 실제 금액과 차이가 있을 수 있습니다.<br>
+  <a href="/calculator-hub/privacy.html">개인정보처리방침</a>
+</footer>
+<script>
+
+let type='buy';
+function setType(t){type=t;document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===['buy','rent','monthly'].indexOf(t)));['buy','rent','monthly'].forEach(x=>document.getElementById('f-'+x).style.display=x===t?'':'none');calc();}
+function fmt(n){if(n>=100000000)return(n/100000000).toFixed(1)+'억원';if(n>=10000)return Math.round(n/10000)+'만원';return Math.round(n).toLocaleString()+'원';}
+function getRate(price,isBuy){
+  if(isBuy){
+    if(price<50000000)return 0.006;
+    if(price<200000000)return 0.005;
+    if(price<900000000)return 0.004;
+    if(price<1200000000)return 0.005;
+    if(price<1500000000)return 0.006;
+    return 0.007;
+  } else {
+    if(price<50000000)return 0.005;
+    if(price<100000000)return 0.004;
+    if(price<600000000)return 0.003;
+    if(price<1200000000)return 0.004;
+    if(price<1500000000)return 0.005;
+    return 0.006;
+  }
+}
+function calc(){
+  let price=0;
+  if(type==='buy')price=parseFloat(document.getElementById('buy-price').value)||0;
+  else if(type==='rent')price=parseFloat(document.getElementById('rent-price').value)||0;
+  else{const dep=parseFloat(document.getElementById('m-deposit').value)||0;const rent=parseFloat(document.getElementById('m-rent').value)||0;price=dep+rent*100;}
+  const isBuy=type==='buy';
+  const rate=getRate(price,isBuy);
+  const fee=Math.round(price*rate);
+  const vat=Math.round(fee*0.1);
+  const total=fee+vat;
+  document.getElementById('r-price').textContent=fmt(price);
+  document.getElementById('r-rate').textContent=(rate*100).toFixed(1)+'%';
+  document.getElementById('r-fee').textContent=fmt(fee);
+  document.getElementById('r-vat').textContent=fmt(vat);
+  document.getElementById('r-total').textContent=fmt(total);
+  document.getElementById('r-main').textContent=fmt(total);
+  document.getElementById('result').classList.add('show');
+}
+
+</script>
+</body>
+</html>

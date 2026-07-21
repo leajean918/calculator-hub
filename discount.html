@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V3FZTLEP4M"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-V3FZTLEP4M');</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6685782149988736" crossorigin="anonymous"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>할인 계산기 | Calculator Hub</title>
+<meta name="description" content="할인율·할인가·원래 가격을 쉽게 계산하세요.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#f59e0b}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f1117;--card:#1a1d27;--border:#2a2e42;--text:#f0f2ff;--muted:#7a84a0;--dim:#4a5068}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.site-header{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.site-header a{text-decoration:none;color:var(--muted);font-size:13px}
+.site-header a:hover{color:var(--text)}
+.main{max-width:560px;margin:0 auto;padding:28px 20px 60px}
+h1{font-size:clamp(20px,4vw,28px);font-weight:900;margin-bottom:8px}
+.desc{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:24px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:500}
+.field input,.field select{width:100%;padding:12px 14px;background:#12151f;border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus{border-color:var(--accent)}
+.field select option{background:#1a1d27}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.calc-btn{width:100%;padding:14px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px;transition:opacity .2s}
+.calc-btn:hover{opacity:.88}
+.result-box{background:#12151f;border:1px solid var(--border);border-radius:12px;padding:20px;margin-top:16px;display:none}
+.result-box.show{display:block}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:14px}
+.result-row:last-child{border:none}
+.result-row .label{color:var(--muted)}
+.result-row .value{font-weight:700;font-size:15px;color:var(--accent)}
+.result-main{text-align:center;padding:16px 0 12px;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,.08)}
+.result-main .big{font-size:32px;font-weight:900;color:var(--accent)}
+.result-main .sub{font-size:12px;color:var(--muted);margin-top:4px}
+.note{font-size:11px;color:var(--dim);line-height:1.6;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.05)}
+.tab-wrap{display:flex;gap:6px;margin-bottom:16px}
+.tab-btn{flex:1;padding:9px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--muted);font-size:13px;font-family:inherit;cursor:pointer;transition:all .2s}
+.tab-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.site-footer{text-align:center;padding:20px;font-size:12px;color:var(--dim);border-top:1px solid var(--border)}
+.site-footer a{color:var(--dim);text-decoration:none}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a href="/calculator-hub/">✦ Calculator Hub</a>
+  <span style="color:var(--dim)">›</span>
+  <span style="font-size:13px;color:var(--text)">할인 계산기</span>
+</header>
+<main class="main">
+<h1>🏷️ 할인 계산기</h1>
+<p class="desc">할인율로 최종가 계산, 또는 두 가격으로 할인율 역산.</p>
+<div class="card">
+  <div class="tab-wrap">
+    <button class="tab-btn active" onclick="setMode('rate')">할인율 → 최종가</button>
+    <button class="tab-btn" onclick="setMode('calc')">두 가격 → 할인율</button>
+  </div>
+  <div id="f-rate">
+    <div class="row2">
+      <div class="field"><label>원래 가격 (원)</label><input id="orig" type="number" placeholder="50000" oninput="calc()"></div>
+      <div class="field"><label>할인율 (%)</label><input id="rate" type="number" placeholder="30" max="100" oninput="calc()"></div>
+    </div>
+  </div>
+  <div id="f-calc" style="display:none">
+    <div class="row2">
+      <div class="field"><label>원래 가격 (원)</label><input id="p-orig" type="number" placeholder="50000" oninput="calc()"></div>
+      <div class="field"><label>할인된 가격 (원)</label><input id="p-disc" type="number" placeholder="35000" oninput="calc()"></div>
+    </div>
+  </div>
+</div>
+<div class="result-box" id="result">
+  <div class="result-main"><div class="big" id="r-main">0원</div><div class="sub" id="r-sub">최종 결제 금액</div></div>
+  <div class="result-row"><span class="label">원래 가격</span><span class="value" id="r-orig">-</span></div>
+  <div class="result-row"><span class="label">할인율</span><span class="value" id="r-rate">-</span></div>
+  <div class="result-row"><span class="label">할인 금액</span><span class="value" id="r-save">-</span></div>
+  <div class="result-row"><span class="label">최종 결제 금액</span><span class="value" id="r-final">-</span></div>
+</div>
+</main>
+<footer class="site-footer">
+  본 계산기는 간편 계산용으로 실제 금액과 차이가 있을 수 있습니다.<br>
+  <a href="/calculator-hub/privacy.html">개인정보처리방침</a>
+</footer>
+<script>
+
+let mode='rate';
+function setMode(m){mode=m;document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===(m==='rate'?0:1)));document.getElementById('f-rate').style.display=m==='rate'?'':'none';document.getElementById('f-calc').style.display=m==='calc'?'':'none';calc();}
+function fmt(n){return Math.round(n).toLocaleString()+'원';}
+function calc(){
+  const r=document.getElementById('result');
+  let orig,rate,save,final;
+  if(mode==='rate'){
+    orig=parseFloat(document.getElementById('orig').value)||0;
+    rate=parseFloat(document.getElementById('rate').value)||0;
+    save=orig*rate/100;final=orig-save;
+    document.getElementById('r-sub').textContent='최종 결제 금액';
+    document.getElementById('r-main').textContent=fmt(final);
+    document.getElementById('r-rate').textContent=rate.toFixed(1)+'%';
+  } else {
+    orig=parseFloat(document.getElementById('p-orig').value)||0;
+    final=parseFloat(document.getElementById('p-disc').value)||0;
+    save=orig-final;rate=orig>0?save/orig*100:0;
+    document.getElementById('r-sub').textContent='할인율';
+    document.getElementById('r-main').textContent=rate.toFixed(1)+'%';
+    document.getElementById('r-rate').textContent=rate.toFixed(1)+'%';
+  }
+  document.getElementById('r-orig').textContent=fmt(orig);
+  document.getElementById('r-save').textContent=fmt(save);
+  document.getElementById('r-final').textContent=fmt(final);
+  r.classList.add('show');
+}
+
+</script>
+</body>
+</html>

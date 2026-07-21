@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V3FZTLEP4M"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-V3FZTLEP4M');</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6685782149988736" crossorigin="anonymous"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>부동산 취득세 계산기 | Calculator Hub</title>
+<meta name="description" content="주택 매매 시 취득세·지방교육세·농특세를 계산하세요.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#f59e0b}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f1117;--card:#1a1d27;--border:#2a2e42;--text:#f0f2ff;--muted:#7a84a0;--dim:#4a5068}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.site-header{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.site-header a{text-decoration:none;color:var(--muted);font-size:13px}
+.site-header a:hover{color:var(--text)}
+.main{max-width:560px;margin:0 auto;padding:28px 20px 60px}
+h1{font-size:clamp(20px,4vw,28px);font-weight:900;margin-bottom:8px}
+.desc{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:24px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:500}
+.field input,.field select{width:100%;padding:12px 14px;background:#12151f;border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus{border-color:var(--accent)}
+.field select option{background:#1a1d27}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.calc-btn{width:100%;padding:14px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px;transition:opacity .2s}
+.calc-btn:hover{opacity:.88}
+.result-box{background:#12151f;border:1px solid var(--border);border-radius:12px;padding:20px;margin-top:16px;display:none}
+.result-box.show{display:block}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:14px}
+.result-row:last-child{border:none}
+.result-row .label{color:var(--muted)}
+.result-row .value{font-weight:700;font-size:15px;color:var(--accent)}
+.result-main{text-align:center;padding:16px 0 12px;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,.08)}
+.result-main .big{font-size:32px;font-weight:900;color:var(--accent)}
+.result-main .sub{font-size:12px;color:var(--muted);margin-top:4px}
+.note{font-size:11px;color:var(--dim);line-height:1.6;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.05)}
+.tab-wrap{display:flex;gap:6px;margin-bottom:16px}
+.tab-btn{flex:1;padding:9px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--muted);font-size:13px;font-family:inherit;cursor:pointer;transition:all .2s}
+.tab-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.site-footer{text-align:center;padding:20px;font-size:12px;color:var(--dim);border-top:1px solid var(--border)}
+.site-footer a{color:var(--dim);text-decoration:none}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a href="/calculator-hub/">✦ Calculator Hub</a>
+  <span style="color:var(--dim)">›</span>
+  <span style="font-size:13px;color:var(--text)">부동산 취득세 계산기</span>
+</header>
+<main class="main">
+<h1>🏠 부동산 취득세 계산기</h1>
+<p class="desc">주택 구매 시 납부할 취득세·지방교육세·농특세 합계를 계산합니다.</p>
+<div class="card">
+  <div class="field"><label>취득 가격 (원)</label><input id="price" type="number" placeholder="500000000" oninput="calc()"></div>
+  <div class="row2">
+    <div class="field"><label>보유 주택 수 (취득 후)</label>
+      <select id="owned" onchange="calc()">
+        <option value="1">1주택</option>
+        <option value="2">2주택</option>
+        <option value="3">3주택 이상</option>
+        <option value="4">법인</option>
+      </select>
+    </div>
+    <div class="field"><label>전용면적</label>
+      <select id="area" onchange="calc()">
+        <option value="85">85㎡ 이하</option>
+        <option value="86">85㎡ 초과</option>
+      </select>
+    </div>
+  </div>
+  <div class="field"><label>조정대상지역 여부</label>
+    <select id="regulated" onchange="calc()">
+      <option value="no">비조정대상지역</option>
+      <option value="yes">조정대상지역</option>
+    </select>
+  </div>
+</div>
+<div class="result-box" id="result">
+  <div class="result-main"><div class="big" id="r-main">0원</div><div class="sub">총 납부세액</div></div>
+  <div class="result-row"><span class="label">취득세율</span><span class="value" id="r-rate">-</span></div>
+  <div class="result-row"><span class="label">취득세</span><span class="value" id="r-acq">-</span></div>
+  <div class="result-row"><span class="label">지방교육세</span><span class="value" id="r-edu">-</span></div>
+  <div class="result-row"><span class="label">농어촌특별세</span><span class="value" id="r-agri">-</span></div>
+  <div class="result-row"><span class="label">합계</span><span class="value" id="r-total">-</span></div>
+  <p class="note">※ 개인 주택 기준 | 조정대상지역 2주택: 8%, 3주택↑: 12% | 법인: 12% | 정확한 세액은 위택스(wetax.go.kr) 또는 세무사 확인 권장</p>
+</div>
+</main>
+<footer class="site-footer">
+  본 계산기는 간편 계산용으로 실제 금액과 차이가 있을 수 있습니다.<br>
+  <a href="/calculator-hub/privacy.html">개인정보처리방침</a>
+</footer>
+<script>
+
+function fmt(n){if(n>=100000000)return(n/100000000).toFixed(1)+'억원';if(n>=10000)return Math.round(n/10000)+'만원';return Math.round(n).toLocaleString()+'원';}
+function getRate(price,owned,regulated){
+  if(owned==='4')return 0.12;
+  if(owned==='3')return(regulated==='yes')?0.12:0.08;
+  if(owned==='2')return(regulated==='yes')?0.08:
+    (price<=600000000?0.01:price<=900000000?(price-600000000)/300000000*0.02+0.01:0.03);
+  // 1주택
+  if(price<=600000000)return 0.01;
+  if(price<=900000000)return(price-600000000)/300000000*0.02+0.01;
+  return 0.03;
+}
+function calc(){
+  const price=parseFloat(document.getElementById('price').value)||0;
+  const owned=document.getElementById('owned').value;
+  const area=document.getElementById('area').value;
+  const regulated=document.getElementById('regulated').value;
+  const rate=getRate(price,owned,regulated);
+  const acq=Math.round(price*rate);
+  const edu=Math.round(acq*0.1);
+  const agri=(area==='86'&&(owned==='1'||rate<0.04))?Math.round(price*0.002):0;
+  const total=acq+edu+agri;
+  document.getElementById('r-rate').textContent=(rate*100).toFixed(1)+'%';
+  document.getElementById('r-acq').textContent=fmt(acq);
+  document.getElementById('r-edu').textContent=fmt(edu);
+  document.getElementById('r-agri').textContent=fmt(agri);
+  document.getElementById('r-total').textContent=fmt(total);
+  document.getElementById('r-main').textContent=fmt(total);
+  document.getElementById('result').classList.add('show');
+}
+
+</script>
+</body>
+</html>

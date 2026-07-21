@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V3FZTLEP4M"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-V3FZTLEP4M');</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6685782149988736" crossorigin="anonymous"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>부가세 계산기 | Calculator Hub</title>
+<meta name="description" content="공급가액과 부가세를 간편하게 계산하세요.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#a78bfa}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f1117;--card:#1a1d27;--border:#2a2e42;--text:#f0f2ff;--muted:#7a84a0;--dim:#4a5068}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.site-header{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.site-header a{text-decoration:none;color:var(--muted);font-size:13px}
+.site-header a:hover{color:var(--text)}
+.main{max-width:560px;margin:0 auto;padding:28px 20px 60px}
+h1{font-size:clamp(20px,4vw,28px);font-weight:900;margin-bottom:8px}
+.desc{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:24px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:500}
+.field input,.field select{width:100%;padding:12px 14px;background:#12151f;border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus{border-color:var(--accent)}
+.field select option{background:#1a1d27}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.calc-btn{width:100%;padding:14px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px;transition:opacity .2s}
+.calc-btn:hover{opacity:.88}
+.result-box{background:#12151f;border:1px solid var(--border);border-radius:12px;padding:20px;margin-top:16px;display:none}
+.result-box.show{display:block}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:14px}
+.result-row:last-child{border:none}
+.result-row .label{color:var(--muted)}
+.result-row .value{font-weight:700;font-size:15px;color:var(--accent)}
+.result-main{text-align:center;padding:16px 0 12px;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,.08)}
+.result-main .big{font-size:32px;font-weight:900;color:var(--accent)}
+.result-main .sub{font-size:12px;color:var(--muted);margin-top:4px}
+.note{font-size:11px;color:var(--dim);line-height:1.6;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.05)}
+.tab-wrap{display:flex;gap:6px;margin-bottom:16px}
+.tab-btn{flex:1;padding:9px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--muted);font-size:13px;font-family:inherit;cursor:pointer;transition:all .2s}
+.tab-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.site-footer{text-align:center;padding:20px;font-size:12px;color:var(--dim);border-top:1px solid var(--border)}
+.site-footer a{color:var(--dim);text-decoration:none}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a href="/calculator-hub/">✦ Calculator Hub</a>
+  <span style="color:var(--dim)">›</span>
+  <span style="font-size:13px;color:var(--text)">부가세 계산기</span>
+</header>
+<main class="main">
+<h1>💰 부가세 계산기</h1>
+<p class="desc">공급가액 ↔ 부가세 포함가 즉시 변환. 사업자 필수 계산기.</p>
+<div class="card">
+  <div class="tab-wrap">
+    <button class="tab-btn active" onclick="setMode('exclude')">공급가액 → 부가세 포함가</button>
+    <button class="tab-btn" onclick="setMode('include')">부가세 포함가 → 공급가액</button>
+  </div>
+  <div id="f-exclude">
+    <div class="field"><label>공급가액 (부가세 제외 금액)</label><input id="ex-price" type="number" placeholder="예) 100000" oninput="calcVat()"></div>
+  </div>
+  <div id="f-include" style="display:none">
+    <div class="field"><label>부가세 포함 금액</label><input id="in-price" type="number" placeholder="예) 110000" oninput="calcVat()"></div>
+  </div>
+</div>
+<div class="result-box" id="result">
+  <div class="result-main"><div class="big" id="r-main">0원</div><div class="sub" id="r-main-sub">부가세 포함가</div></div>
+  <div class="result-row"><span class="label">공급가액</span><span class="value" id="r-supply">-</span></div>
+  <div class="result-row"><span class="label">부가세 (10%)</span><span class="value" id="r-vat">-</span></div>
+  <div class="result-row"><span class="label">부가세 포함가</span><span class="value" id="r-total">-</span></div>
+</div>
+</main>
+<footer class="site-footer">
+  본 계산기는 간편 계산용으로 실제 금액과 차이가 있을 수 있습니다.<br>
+  <a href="/calculator-hub/privacy.html">개인정보처리방침</a>
+</footer>
+<script>
+
+let mode='exclude';
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===(m==='exclude'?0:1)));
+  document.getElementById('f-exclude').style.display=m==='exclude'?'':'none';
+  document.getElementById('f-include').style.display=m==='include'?'':'none';
+  calcVat();
+}
+function fmt(n){if(n>=100000000)return(n/100000000).toFixed(1)+'억원';if(n>=10000)return Math.round(n/10000)+'만원';return n.toLocaleString()+'원';}
+function calcVat(){
+  const r=document.getElementById('result');
+  let supply,vat,total;
+  if(mode==='exclude'){
+    supply=parseFloat(document.getElementById('ex-price').value)||0;
+    vat=Math.round(supply*0.1);total=supply+vat;
+    document.getElementById('r-main-sub').textContent='부가세 포함가';
+    document.getElementById('r-main').textContent=fmt(total);
+  } else {
+    total=parseFloat(document.getElementById('in-price').value)||0;
+    supply=Math.round(total/1.1);vat=total-supply;
+    document.getElementById('r-main-sub').textContent='공급가액';
+    document.getElementById('r-main').textContent=fmt(supply);
+  }
+  document.getElementById('r-supply').textContent=fmt(supply);
+  document.getElementById('r-vat').textContent=fmt(vat);
+  document.getElementById('r-total').textContent=fmt(total);
+  r.classList.add('show');
+}
+
+</script>
+</body>
+</html>

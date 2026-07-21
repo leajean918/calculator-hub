@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V3FZTLEP4M"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-V3FZTLEP4M');</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6685782149988736" crossorigin="anonymous"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>대출 한도 계산기 (DSR) | Calculator Hub</title>
+<meta name="description" content="연소득과 DSR 기준으로 최대 대출 가능 금액을 계산하세요.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#4f8ef7}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f1117;--card:#1a1d27;--border:#2a2e42;--text:#f0f2ff;--muted:#7a84a0;--dim:#4a5068}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.site-header{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.site-header a{text-decoration:none;color:var(--muted);font-size:13px}
+.site-header a:hover{color:var(--text)}
+.main{max-width:560px;margin:0 auto;padding:28px 20px 60px}
+h1{font-size:clamp(20px,4vw,28px);font-weight:900;margin-bottom:8px}
+.desc{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:24px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:500}
+.field input,.field select{width:100%;padding:12px 14px;background:#12151f;border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus{border-color:var(--accent)}
+.field select option{background:#1a1d27}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.calc-btn{width:100%;padding:14px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px;transition:opacity .2s}
+.calc-btn:hover{opacity:.88}
+.result-box{background:#12151f;border:1px solid var(--border);border-radius:12px;padding:20px;margin-top:16px;display:none}
+.result-box.show{display:block}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:14px}
+.result-row:last-child{border:none}
+.result-row .label{color:var(--muted)}
+.result-row .value{font-weight:700;font-size:15px;color:var(--accent)}
+.result-main{text-align:center;padding:16px 0 12px;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,.08)}
+.result-main .big{font-size:32px;font-weight:900;color:var(--accent)}
+.result-main .sub{font-size:12px;color:var(--muted);margin-top:4px}
+.note{font-size:11px;color:var(--dim);line-height:1.6;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.05)}
+.tab-wrap{display:flex;gap:6px;margin-bottom:16px}
+.tab-btn{flex:1;padding:9px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--muted);font-size:13px;font-family:inherit;cursor:pointer;transition:all .2s}
+.tab-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.site-footer{text-align:center;padding:20px;font-size:12px;color:var(--dim);border-top:1px solid var(--border)}
+.site-footer a{color:var(--dim);text-decoration:none}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a href="/calculator-hub/">✦ Calculator Hub</a>
+  <span style="color:var(--dim)">›</span>
+  <span style="font-size:13px;color:var(--text)">대출 한도 계산기 (DSR)</span>
+</header>
+<main class="main">
+<h1>🏦 대출 한도 계산기</h1>
+<p class="desc">DSR(총부채원리금상환비율) 기준으로 최대 대출 가능 금액을 계산합니다.</p>
+<div class="card">
+  <div class="row2">
+    <div class="field"><label>연소득 (원)</label><input id="income" type="number" placeholder="50000000" oninput="calc()"></div>
+    <div class="field"><label>DSR 기준 (%)</label>
+      <select id="dsr" onchange="calc()">
+        <option value="40">40% (일반)</option>
+        <option value="50">50% (특례)</option>
+      </select>
+    </div>
+  </div>
+  <div class="row2">
+    <div class="field"><label>대출 금리 (%/년)</label><input id="rate" type="number" value="4.5" step="0.1" oninput="calc()"></div>
+    <div class="field"><label>대출 기간 (년)</label>
+      <select id="years" onchange="calc()">
+        <option value="10">10년</option>
+        <option value="20">20년</option>
+        <option value="30" selected>30년</option>
+        <option value="40">40년</option>
+      </select>
+    </div>
+  </div>
+  <div class="field"><label>기존 대출 월 상환액 (원)</label><input id="existing" type="number" value="0" placeholder="0" oninput="calc()"></div>
+</div>
+<div class="result-box" id="result">
+  <div class="result-main"><div class="big" id="r-main">0원</div><div class="sub">최대 대출 가능 금액 (원리금균등상환)</div></div>
+  <div class="result-row"><span class="label">연소득</span><span class="value" id="r-income">-</span></div>
+  <div class="result-row"><span class="label">DSR 기준 월 상환 한도</span><span class="value" id="r-dsr-limit">-</span></div>
+  <div class="result-row"><span class="label">기존 월 상환액</span><span class="value" id="r-existing">-</span></div>
+  <div class="result-row"><span class="label">신규 대출 가능 월 상환액</span><span class="value" id="r-available">-</span></div>
+  <div class="result-row"><span class="label">최대 대출 금액</span><span class="value" id="r-limit">-</span></div>
+  <div class="result-row"><span class="label">월 상환액</span><span class="value" id="r-monthly">-</span></div>
+  <p class="note">※ 원리금균등상환 기준 | DSR은 모든 금융부채 원리금 합산 | 실제 대출 한도는 LTV, 담보가치, 신용도 등에 따라 다를 수 있습니다</p>
+</div>
+</main>
+<footer class="site-footer">
+  본 계산기는 간편 계산용으로 실제 금액과 차이가 있을 수 있습니다.<br>
+  <a href="/calculator-hub/privacy.html">개인정보처리방침</a>
+</footer>
+<script>
+
+function fmt(n){if(n>=100000000)return(n/100000000).toFixed(1)+'억원';if(n>=10000)return Math.round(n/10000)+'만원';return Math.round(n).toLocaleString()+'원';}
+function calc(){
+  const income=parseFloat(document.getElementById('income').value)||0;
+  const dsr=parseFloat(document.getElementById('dsr').value)/100;
+  const rate=parseFloat(document.getElementById('rate').value)/100/12;
+  const n=parseFloat(document.getElementById('years').value)*12;
+  const existing=parseFloat(document.getElementById('existing').value)||0;
+  const dsrLimit=Math.round(income*dsr/12);
+  const available=Math.max(0,dsrLimit-existing);
+  // 원리금균등상환: PMT = PV * r / (1-(1+r)^-n)
+  let maxLoan=0;
+  if(rate>0&&available>0){maxLoan=Math.round(available*(1-Math.pow(1+rate,-n))/rate);}
+  else if(rate===0){maxLoan=available*n;}
+  const monthly=maxLoan>0&&rate>0?Math.round(maxLoan*rate/(1-Math.pow(1+rate,-n))):0;
+  document.getElementById('r-income').textContent=fmt(income);
+  document.getElementById('r-dsr-limit').textContent=fmt(dsrLimit)+'/월';
+  document.getElementById('r-existing').textContent=fmt(existing)+'/월';
+  document.getElementById('r-available').textContent=fmt(available)+'/월';
+  document.getElementById('r-limit').textContent=fmt(maxLoan);
+  document.getElementById('r-monthly').textContent=fmt(monthly)+'/월';
+  document.getElementById('r-main').textContent=fmt(maxLoan);
+  document.getElementById('result').classList.add('show');
+}
+calc();
+
+</script>
+</body>
+</html>
