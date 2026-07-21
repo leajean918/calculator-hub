@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V3FZTLEP4M"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-V3FZTLEP4M');</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6685782149988736" crossorigin="anonymous"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>주식 타이밍 게임 | Calculator Hub</title>
+<meta name="description" content="1000만원으로 시작해 5라운드 동안 매수·매도 타이밍을 잡아 최대 수익을 내세요!">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f1117;--card:#1a1d27;--border:#2a2e42;--text:#f0f2ff;--muted:#7a84a0;--dim:#4a5068;--blue:#4f8ef7;--green:#34d399;--red:#ef4444;--amber:#f59e0b;--yellow:#facc15}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.site-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;font-size:13px}
+.site-header a{text-decoration:none;color:var(--muted)}
+.site-header a:hover{color:var(--text)}
+.wrap{max-width:520px;margin:0 auto;padding:16px 16px 60px}
+/* ── 시작화면 ── */
+.start-box{text-align:center;padding:24px 0 8px}
+.start-icon{font-size:56px;margin-bottom:12px}
+.start-title{font-size:24px;font-weight:900;margin-bottom:8px}
+.start-desc{font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:20px}
+.rules{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;text-align:left}
+.rules div{font-size:13px;color:var(--muted);line-height:2.2}
+.rules strong{color:var(--text)}
+/* ── 게임화면 ── */
+.hud{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;padding:10px 14px;background:var(--card);border-radius:10px}
+.hud-item{text-align:center}
+.hud-label{font-size:10px;color:var(--dim);margin-bottom:2px}
+.hud-val{font-size:14px;font-weight:700}
+.progress-wrap{background:#12151f;border-radius:3px;height:4px;margin-bottom:14px;overflow:hidden}
+.progress-bar{height:100%;background:var(--blue);transition:width 0.3s}
+.price-display{text-align:center;margin-bottom:10px}
+.price-num{font-size:38px;font-weight:900;letter-spacing:-1px}
+.price-change{font-size:14px;font-weight:700;margin-top:2px}
+canvas{width:100%;border-radius:10px;display:block;margin-bottom:8px}
+.news{font-size:11px;color:var(--dim);text-align:center;min-height:20px;margin-bottom:12px}
+.btn-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.btn-buy,.btn-sell{padding:18px;border:none;border-radius:12px;font-size:18px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;letter-spacing:.5px}
+.btn-buy.on{background:#059669;color:#fff}
+.btn-buy.off{background:#0f2520;color:var(--dim);cursor:not-allowed}
+.btn-sell.on{background:#dc2626;color:#fff}
+.btn-sell.off{background:#200f0f;color:var(--dim);cursor:not-allowed}
+.btn-buy.on:hover{background:#047857}
+.btn-sell.on:hover{background:#b91c1c}
+.holdings{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;text-align:center}
+.h-label{font-size:10px;color:var(--dim);margin-bottom:3px}
+.h-val{font-size:13px;font-weight:600}
+/* ── 브레이크화면 ── */
+.break-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center;margin-bottom:12px}
+.break-title{font-size:13px;color:var(--muted);margin-bottom:6px}
+.break-ret{font-size:36px;font-weight:900;margin-bottom:4px}
+.break-port{font-size:13px;color:var(--muted)}
+.break-hint{font-size:11px;color:var(--dim);margin-top:10px}
+/* ── 결과화면 ── */
+.end-box{text-align:center;padding:16px 0}
+.end-emoji{font-size:56px;margin-bottom:10px}
+.end-label{font-size:17px;font-weight:700;margin-bottom:8px}
+.end-ret{font-size:44px;font-weight:900;margin:14px 0}
+.end-port{font-size:14px;color:var(--muted);margin-bottom:18px}
+.round-hist{background:var(--card);border-radius:12px;padding:14px;margin-bottom:18px;text-align:left}
+.hist-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,.05)}
+.hist-row:last-child{border:none}
+/* ── 공통 버튼 ── */
+.big-btn{width:100%;padding:14px;background:var(--blue);border:none;border-radius:10px;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .2s;margin-bottom:8px}
+.big-btn:hover{opacity:.88}
+.big-btn.secondary{background:var(--card);border:1px solid var(--border);color:var(--muted)}
+/* ── 푸터 ── */
+.site-footer{text-align:center;padding:20px;font-size:12px;color:var(--dim);border-top:1px solid var(--border);margin-top:8px}
+.site-footer a{color:var(--dim);text-decoration:none}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a href="/calculator-hub/">✦ Calculator Hub</a>
+  <span style="color:var(--dim)">›</span>
+  <span>주식 타이밍 게임</span>
+</header>
+<div class="wrap" id="root"></div>
+<footer class="site-footer">
+  <a href="/calculator-hub/">← Calculator Hub 홈으로</a> &nbsp;|&nbsp;
+  <a href="/calculator-hub/privacy.html">개인정보처리방침</a><br>
+  <small style="display:block;margin-top:6px">본 게임은 오락 목적이며 실제 주식 투자와 다릅니다</small>
+</footer>
+
+<script>
+/* ════════════════════════════════
+   주식 타이밍 게임
+   ════════════════════════════════ */
+const G = {
+  INIT: 10000000,   // 시작 자금
+  ROUNDS: 5,        // 총 라운드
+  TICKS: 90,        // 라운드당 틱 수
+  MS: 330,          // ms / 틱
+  BREAK: 3000,      // 라운드 사이 휴식 ms
+};
+
+const NEWS_POOL = [
+  '📰 분기 실적 발표 예정','⚡ 외국인 순매수 급증','📉 금리 인상 우려 확산',
+  '🔥 공매도 세력 청산 포착','📊 기관 투자자 매집','⚠️ 글로벌 증시 불안',
+  '💡 신제품 발표 임박','🏦 연준 금리 동결 기대','🌐 원/달러 환율 급등',
+  '🏭 반도체 수출 호조','📦 공급망 차질 우려','💰 배당 확대 발표',
+];
+
+let S = {};        // 게임 상태
+let timer = null;  // 틱 타이머
+
+function initState() {
+  return {
+    phase: 'start',
+    round: 1, tick: 0,
+    cash: G.INIT, shares: 0, avgBuy: 0,
+    price: 50000, prevPrice: 50000,
+    roundStartPrice: 50000,
+    prices: [50000],
+    trend: 0, vol: 0.01,
+    news: '',
+    roundResult: null,
+    history: [],
+  };
+}
+
+function port() { return S.cash + S.shares * S.price; }
+function retPct() { return (port() - G.INIT) / G.INIT * 100; }
+
+function rndTrend() { return (Math.random() - 0.48) * 0.004; }
+function rndVol()   { return 0.007 + Math.random() * 0.013; }
+
+function nextPrice(p, t, v) {
+  const c = p * (t + v * (Math.random() * 2 - 1));
+  return Math.max(500, p + c);
+}
+
+/* ── 게임 흐름 ── */
+function startGame() {
+  clearInterval(timer);
+  S = initState();
+  S.phase = 'playing';
+  S.trend = rndTrend(); S.vol = rndVol();
+  S.news = '📢 장이 열렸습니다! 타이밍을 잡으세요';
+  timer = setInterval(tick, G.MS);
+  render();
+}
+
+function tick() {
+  S.prevPrice = S.price;
+  S.price = nextPrice(S.price, S.trend, S.vol);
+  S.prices.push(S.price);
+  S.tick++;
+  if (Math.random() < 0.04) S.news = NEWS_POOL[Math.floor(Math.random() * NEWS_POOL.length)];
+  if (Math.random() < 0.025) S.trend = rndTrend();
+  if (S.tick >= G.TICKS) endRound();
+  else render();
+}
+
+function endRound() {
+  clearInterval(timer);
+  if (S.shares > 0) { S.cash += S.shares * S.price; S.shares = 0; S.avgBuy = 0; }
+  S.roundResult = { round: S.round, ret: retPct(), port: port() };
+  S.history.push(S.roundResult);
+  S.phase = 'break';
+  render();
+  setTimeout(() => {
+    if (S.round >= G.ROUNDS) { S.phase = 'end'; render(); }
+    else {
+      S.round++; S.tick = 0;
+      S.roundStartPrice = S.price;
+      S.trend = rndTrend(); S.vol = rndVol();
+      S.phase = 'playing'; S.roundResult = null;
+      S.news = '🔔 ' + S.round + '라운드 시작!';
+      timer = setInterval(tick, G.MS);
+      render();
+    }
+  }, G.BREAK);
+}
+
+function buy() {
+  if (S.phase !== 'playing' || S.cash < S.price) return;
+  const qty = Math.floor(S.cash / S.price);
+  const cost = qty * S.price;
+  S.avgBuy = (S.avgBuy * S.shares + cost) / (S.shares + qty);
+  S.shares += qty; S.cash -= cost;
+  render();
+}
+
+function sell() {
+  if (S.phase !== 'playing' || S.shares <= 0) return;
+  S.cash += S.shares * S.price;
+  S.shares = 0; S.avgBuy = 0;
+  render();
+}
+
+/* ── 차트 그리기 ── */
+function drawChart() {
+  const cv = document.getElementById('cv');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  ctx.fillStyle = '#0a0d14';
+  ctx.fillRect(0, 0, W, H);
+  const vis = S.prices.slice(-90);
+  if (vis.length < 2) return;
+  const lo = Math.min(...vis), hi = Math.max(...vis);
+  const rng = hi - lo || 1, pad = rng * 0.12;
+  const px = (p) => H - ((p - lo + pad) / (rng + pad * 2)) * H * 0.92 - H * 0.04;
+  const up = S.price >= S.roundStartPrice;
+  const lc = up ? '#34d399' : '#ef4444';
+  const fc = up ? 'rgba(52,211,153,0.10)' : 'rgba(239,68,68,0.10)';
+  // grid
+  ctx.strokeStyle = '#1a1d27'; ctx.lineWidth = 1;
+  for (let i = 1; i < 4; i++) {
+    const y = H * i / 4;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+  // fill
+  ctx.beginPath();
+  vis.forEach((p, i) => {
+    const x = i / (vis.length - 1) * W;
+    i === 0 ? ctx.moveTo(x, px(p)) : ctx.lineTo(x, px(p));
+  });
+  const lx = W, ly = px(vis[vis.length - 1]);
+  ctx.lineTo(lx, ly); ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+  ctx.fillStyle = fc; ctx.fill();
+  // line
+  ctx.beginPath();
+  vis.forEach((p, i) => {
+    const x = i / (vis.length - 1) * W;
+    i === 0 ? ctx.moveTo(x, px(p)) : ctx.lineTo(x, px(p));
+  });
+  ctx.strokeStyle = lc; ctx.lineWidth = 2.5; ctx.stroke();
+  // dashed current line
+  ctx.setLineDash([4, 5]); ctx.strokeStyle = lc; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, ly); ctx.lineTo(W, ly); ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+/* ── 등급 ── */
+function rating(p) {
+  if (p < -30) return ['😵', '대폭락... 손실왕 등극', 'var(--red)'];
+  if (p < -10) return ['😢', '투자 실패, 다음엔 잘 할 수 있어요', 'var(--red)'];
+  if (p <   0) return ['😅', '거의 본전... 살짝 아쉬워요', 'var(--amber)'];
+  if (p <  15) return ['👍', '나쁘지 않은 타이밍이에요!', 'var(--green)'];
+  if (p <  30) return ['🎯', '베테랑 투자자 등극!', 'var(--green)'];
+  if (p <  50) return ['🏆', '훌륭한 트레이더!', 'var(--blue)'];
+  return            ['🔥', '워런 버핏 재림!!! ', 'var(--yellow)'];
+}
+
+/* ── 숫자 포맷 ── */
+function fm(n) {
+  const a = Math.abs(Math.floor(n));
+  if (a >= 100000000) return (a / 100000000).toFixed(1) + '억';
+  if (a >= 10000) return Math.round(a / 10000) + '만';
+  return a.toLocaleString();
+}
+
+/* ── 렌더 ── */
+function render() {
+  const root = document.getElementById('root');
+  const s = S;
+  const pv = port(), rp = retPct();
+  const rc = rp >= 0 ? 'var(--green)' : 'var(--red)';
+  const chg = s.price - s.prevPrice;
+  const chgP = s.prevPrice ? chg / s.prevPrice * 100 : 0;
+  const up = chg >= 0;
+
+  /* 시작화면 */
+  if (s.phase === 'start') {
+    root.innerHTML = `
+<div class="start-box">
+  <div class="start-icon">📈</div>
+  <div class="start-title">주식 타이밍 게임</div>
+  <p class="start-desc">1,000만원으로 시작해 5라운드 동안<br>매수·매도 타이밍을 잡아 최대 수익을 내세요!</p>
+  <div class="rules">
+    <div>💰 시작 자금 <strong>1,000만원</strong></div>
+    <div>🎮 총 <strong>5라운드</strong> (라운드당 약 30초)</div>
+    <div>📌 <strong>전량 매수</strong> / <strong>전량 매도</strong> 방식</div>
+    <div>🏆 최종 수익률로 등급 결정</div>
+  </div>
+  <button class="big-btn" onclick="startGame()">게임 시작 🚀</button>
+</div>`;
+    return;
+  }
+
+  /* 결과화면 */
+  if (s.phase === 'end') {
+    const [em, lb, cl] = rating(rp);
+    root.innerHTML = `
+<div class="end-box">
+  <div class="end-emoji">${em}</div>
+  <div class="end-label" style="color:${cl}">${lb}</div>
+  <div class="end-ret" style="color:${rc}">${rp >= 0 ? '+' : ''}${rp.toFixed(1)}%</div>
+  <div class="end-port">최종 자산 <strong style="color:var(--text)">${fm(pv)}원</strong>
+    &nbsp;(${rp >= 0 ? '+' : ''}${fm(pv - G.INIT)}원)</div>
+  <div class="round-hist">
+    ${s.history.map(h => `
+    <div class="hist-row">
+      <span style="color:var(--muted)">라운드 ${h.round}</span>
+      <span style="font-weight:700;color:${h.ret >= 0 ? 'var(--green)' : 'var(--red)'}">
+        ${h.ret >= 0 ? '+' : ''}${h.ret.toFixed(1)}%
+        &nbsp;<span style="font-size:11px;color:var(--dim)">(${fm(h.port)}원)</span>
+      </span>
+    </div>`).join('')}
+  </div>
+  <button class="big-btn" onclick="startGame()">🔄 다시 도전</button>
+  <button class="big-btn secondary" onclick="goHome()">← 계산기 허브로</button>
+</div>`;
+    return;
+  }
+
+  /* 게임화면 (playing / break) */
+  const prog = Math.min(100, s.tick / G.TICKS * 100);
+  const hv = s.price >= s.avgBuy && s.shares > 0 ? 'var(--green)' : s.shares > 0 ? 'var(--red)' : 'var(--text)';
+
+  root.innerHTML = `
+<div class="hud">
+  <div class="hud-item"><div class="hud-label">라운드</div><div class="hud-val">${s.round} / ${G.ROUNDS}</div></div>
+  <div class="hud-item"><div class="hud-label">포트폴리오</div><div class="hud-val">${fm(pv)}원</div></div>
+  <div class="hud-item"><div class="hud-label">수익률</div><div class="hud-val" style="color:${rc}">${rp >= 0 ? '+' : ''}${rp.toFixed(1)}%</div></div>
+</div>
+<div class="progress-wrap"><div class="progress-bar" style="width:${prog}%"></div></div>
+
+<div class="price-display">
+  <div class="price-num">${Math.round(s.price).toLocaleString()}원</div>
+  <div class="price-change" style="color:${up ? 'var(--green)' : 'var(--red)'}">
+    ${up ? '▲' : '▼'} ${Math.abs(chgP).toFixed(2)}%
+  </div>
+</div>
+
+<canvas id="cv" width="480" height="170"></canvas>
+<div class="news">${s.news}</div>
+
+${s.phase === 'break' ? `
+<div class="break-box">
+  <div class="break-title">라운드 ${s.round} 종료</div>
+  ${s.roundResult ? `
+  <div class="break-ret" style="color:${s.roundResult.ret >= 0 ? 'var(--green)' : 'var(--red)'}">
+    ${s.roundResult.ret >= 0 ? '+' : ''}${s.roundResult.ret.toFixed(1)}%
+  </div>
+  <div class="break-port">누적 자산 ${fm(s.roundResult.port)}원</div>` : ''}
+  <div class="break-hint">${s.round < G.ROUNDS ? '다음 라운드 준비 중...' : '최종 결과 집계 중...'}</div>
+</div>` : `
+<div class="btn-wrap">
+  <button class="btn-buy ${s.cash >= s.price ? 'on' : 'off'}" onclick="buy()">📈 매수</button>
+  <button class="btn-sell ${s.shares > 0 ? 'on' : 'off'}" onclick="sell()">📉 매도</button>
+</div>
+<div class="holdings">
+  <div><div class="h-label">현금</div><div class="h-val">${fm(s.cash)}원</div></div>
+  <div><div class="h-label">보유주식</div><div class="h-val" style="color:${s.shares > 0 ? 'var(--amber)' : 'var(--text)'}">${s.shares > 0 ? s.shares + '주' : '-'}</div></div>
+  <div><div class="h-label">평균단가</div><div class="h-val" style="color:${hv}">${s.shares > 0 ? fm(s.avgBuy) + '원' : '-'}</div></div>
+</div>`}
+`;
+  requestAnimationFrame(drawChart);
+}
+
+function goHome() { location.href = '/calculator-hub/'; }
+
+/* 초기 렌더 */
+S = initState();
+render();
+</script>
+</body>
+</html>
