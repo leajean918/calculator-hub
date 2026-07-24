@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-V3FZTLEP4M"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -12,361 +13,263 @@
      crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>계산기 모음 | 연봉·세금·부동산·투자 한번에</title>
-<meta name="description" content="연봉 실수령액, 퇴직금, 세금, 부동산, 투자까지 생활 밀착형 계산기 25종을 한 곳에서 무료로 이용하세요.">
+<title>계산기 모음 | 연봉·퇴직금·국민연금 한번에</title>
+<meta name="description" content="연봉 실수령액, 퇴직금, 국민연금, 대출이자, 세금까지 — 복잡한 계산 한 번에 끝내세요.">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0e14;
+  --card:#141720;
+  --card-hover:#191c26;
+  --border:#22263a;
+  --text:#eef0ff;
+  --muted:#6b7494;
+  --sub:#9aa0c0;
+  --blue:#4f8ef7;
+  --purple:#9b7cf7;
+  --green:#2ecc9a;
+  --amber:#f0a830;
+  --orange:#f07048;
+  --pink:#d860e8;
+  --teal:#2bbfbf;
+  --red:#e85050;
+}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
-  :root {
-    --bg:     #0f1117;
-    --card:   #1a1d27;
-    --border: #2a2e42;
-    --text:   #f0f2ff;
-    --muted:  #7a84a0;
-    --dim:    #4a5068;
-    --blue:   #4f8ef7;
-    --purple: #a78bfa;
-    --amber:  #f59e0b;
-    --green:  #34d399;
-    --sky:    #38bdf8;
-    --orange: #fb923c;
-    --pink:   #e879f9;
-  }
+/* 헤더 */
+header{text-align:center;padding:52px 20px 36px;position:relative}
+header::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:80%;max-width:600px;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
+.logo{font-size:11px;font-weight:700;letter-spacing:4px;color:var(--blue);text-transform:uppercase;margin-bottom:18px;opacity:.8}
+header h1{font-size:clamp(24px,4vw,40px);font-weight:900;line-height:1.2;margin-bottom:12px}
+header h1 em{font-style:normal;color:var(--blue)}
+header p{font-size:14px;color:var(--muted);line-height:1.8}
 
-  body {
-    font-family: 'Noto Sans KR', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
+/* 검색 */
+.search-wrap{max-width:480px;margin:28px auto 0;position:relative}
+.search-wrap input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px 16px 13px 44px;font-size:14px;font-family:inherit;color:var(--text);outline:none;transition:border-color .2s}
+.search-wrap input::placeholder{color:var(--muted)}
+.search-wrap input:focus{border-color:var(--blue)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;opacity:.5}
 
-  /* ── 헤더 ── */
-  .site-header {
-    padding: 36px 24px 28px;
-    text-align: center;
-    border-bottom: 1px solid var(--border);
-  }
-  .logo {
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    color: var(--blue);
-    text-transform: uppercase;
-    margin-bottom: 14px;
-  }
-  .site-header h1 {
-    font-size: clamp(22px, 4vw, 36px);
-    font-weight: 900;
-    line-height: 1.25;
-    margin-bottom: 10px;
-  }
-  .site-header h1 em { color: var(--blue); font-style: normal; }
-  .site-header p {
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.7;
-    margin-bottom: 16px;
-  }
-  .stats-bar {
-    display: inline-flex;
-    gap: 16px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 99px;
-    padding: 6px 18px;
-    font-size: 12px;
-    color: var(--muted);
-  }
-  .stats-bar b { color: var(--text); }
+/* 그리드 */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:1080px;margin:40px auto 0;padding:0 20px 60px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:580px){.grid{grid-template-columns:1fr}}
 
-  /* ── 본문 ── */
-  .main {
-    max-width: 1020px;
-    margin: 0 auto;
-    padding: 32px 20px 60px;
-  }
+/* 카테고리 카드 */
+.cat-card{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
+.cat-card.blue{border-top:2px solid var(--blue)}
+.cat-card.purple{border-top:2px solid var(--purple)}
+.cat-card.green{border-top:2px solid var(--green)}
+.cat-card.amber{border-top:2px solid var(--amber)}
+.cat-card.orange{border-top:2px solid var(--orange)}
+.cat-card.game{border-top:2px solid var(--pink)}
 
-  /* ── 카테고리 그리드 ── */
-  .category-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-  }
-  @media (max-width: 800px) { .category-grid { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 520px) { .category-grid { grid-template-columns: 1fr; } }
+/* 카드 헤더 */
+.cat-head{display:flex;align-items:center;gap:10px;padding:18px 20px 14px;border-bottom:1px solid var(--border)}
+.cat-icon{font-size:18px;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.blue .cat-icon{background:rgba(79,142,247,.12)}
+.purple .cat-icon{background:rgba(155,124,247,.12)}
+.green .cat-icon{background:rgba(46,204,154,.12)}
+.amber .cat-icon{background:rgba(240,168,48,.12)}
+.orange .cat-icon{background:rgba(240,112,72,.12)}
+.game .cat-icon{background:rgba(216,96,232,.12)}
+.cat-name{font-size:14px;font-weight:700;flex:1}
+.cat-count{font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.06);color:var(--muted)}
 
-  /* ── 카테고리 박스 ── */
-  .cat-box {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-  }
-  .cat-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 14px 16px 12px;
-    border-bottom: 1px solid var(--border);
-  }
-  .cat-icon { font-size: 18px; line-height: 1; }
-  .cat-name { font-size: 14px; font-weight: 700; flex: 1; }
-  .cat-count {
-    font-size: 11px;
-    color: var(--dim);
-    background: rgba(255,255,255,0.04);
-    border-radius: 99px;
-    padding: 2px 8px;
-  }
+/* 아이템 리스트 */
+.cat-list{padding:8px 0;flex:1}
+.cat-item{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;cursor:pointer;text-decoration:none;color:var(--sub);font-size:13.5px;font-weight:500;transition:background .15s,color .15s;position:relative}
+.cat-item:hover{background:var(--card-hover);color:var(--text)}
+.cat-item .arrow{font-size:12px;opacity:0;transform:translateX(-4px);transition:opacity .15s,transform .15s;color:var(--muted)}
+.cat-item:hover .arrow{opacity:1;transform:translateX(0)}
+.badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;flex-shrink:0}
+.badge.hot{background:rgba(232,80,80,.15);color:var(--red)}
+.badge.new{background:rgba(240,168,48,.15);color:var(--amber)}
 
-  /* 좌측 컬러 바 */
-  .cat-box { border-left: 3px solid transparent; }
-  .cat-work   { border-left-color: var(--blue);   }
-  .cat-tax    { border-left-color: var(--purple);  }
-  .cat-realty { border-left-color: var(--amber);   }
-  .cat-invest { border-left-color: var(--green);   }
-  .cat-life   { border-left-color: var(--sky);     }
-  .cat-game   { border-left-color: var(--orange);  }
+/* 게임 카드 특별 스타일 */
+.game-item{padding:14px 20px;display:block;cursor:pointer;text-decoration:none;transition:background .15s;border-radius:0}
+.game-item:hover{background:var(--card-hover)}
+.game-item-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.game-item-title{font-size:14px;font-weight:700;color:var(--text)}
+.game-item-desc{font-size:12px;color:var(--muted);line-height:1.5}
+.coming{padding:12px 20px;font-size:12px;color:var(--muted);font-style:italic}
 
-  .cat-work   .cat-name { color: var(--blue);   }
-  .cat-tax    .cat-name { color: var(--purple);  }
-  .cat-realty .cat-name { color: var(--amber);   }
-  .cat-invest .cat-name { color: var(--green);   }
-  .cat-life   .cat-name { color: var(--sky);     }
-  .cat-game   .cat-name { color: var(--orange);  }
+/* 검색 결과 없음 */
+.no-result{display:none;text-align:center;padding:60px 20px;color:var(--muted);font-size:14px}
+.no-result.show{display:block}
 
-  /* ── 계산기 목록 ── */
-  .calc-list { list-style: none; padding: 6px 0; }
-  .calc-list li { position: relative; }
-  .calc-list li a {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 9px 16px;
-    font-size: 13.5px;
-    color: var(--muted);
-    text-decoration: none;
-    transition: background 0.15s, color 0.15s;
-    gap: 8px;
-  }
-  .calc-list li a:hover {
-    background: rgba(255,255,255,0.05);
-    color: var(--text);
-  }
-  .calc-list li a .arrow {
-    font-size: 11px;
-    color: var(--dim);
-    flex-shrink: 0;
-    opacity: 0;
-    transition: opacity 0.15s, transform 0.15s;
-  }
-  .calc-list li a:hover .arrow {
-    opacity: 1;
-    transform: translateX(2px);
-  }
-  .calc-list li + li { border-top: 1px solid rgba(255,255,255,0.03); }
-
-  /* 뱃지 */
-  .badge {
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 4px;
-    flex-shrink: 0;
-  }
-  .badge-hot  { background: rgba(239,68,68,0.15);  color: #ef4444; }
-  .badge-new  { background: rgba(251,146,60,0.15); color: var(--orange); }
-
-  /* ── 게임 박스 특별 처리 ── */
-  .cat-game {
-    background: linear-gradient(135deg, #1a1d27 0%, #1e1710 100%);
-  }
-  .cat-game .calc-list li a {
-    padding: 12px 16px;
-  }
-  .game-item-name { font-size: 14px; font-weight: 600; color: var(--text); }
-  .game-item-sub  { font-size: 11px; color: var(--dim); margin-top: 1px; }
-
-  .cat-game .calc-list li a:hover .game-item-name { color: var(--orange); }
-
-  .coming-soon {
-    padding: 12px 16px;
-    font-size: 12px;
-    color: var(--dim);
-    font-style: italic;
-    border-top: 1px solid rgba(255,255,255,0.03);
-  }
-
-  /* ── 푸터 ── */
-  .site-footer {
-    text-align: center;
-    padding: 24px 20px;
-    border-top: 1px solid var(--border);
-    font-size: 12px;
-    color: var(--dim);
-  }
-  .site-footer a { color: var(--dim); text-decoration: none; }
-  .site-footer a:hover { color: var(--muted); }
+footer{text-align:center;padding:20px;font-size:12px;color:var(--muted);border-top:1px solid var(--border)}
+footer a{color:var(--muted);text-decoration:none;margin:0 8px}
+footer a:hover{color:var(--sub)}
 </style>
 </head>
 <body>
 
-<header class="site-header">
+<header>
   <div class="logo">✦ Calculator Hub</div>
-  <h1>내 돈, 제대로<br><em>계산해보자</em></h1>
-  <p>연봉·세금·부동산·투자·건강까지<br>복잡한 계산 한 번에 끝내세요</p>
-  <div class="stats-bar">
-    <span>계산기 <b>34</b>종</span>
-    <span>게임 <b>1</b>개</span>
-    <span>무료 이용</span>
+  <h1>복잡한 계산,<br><em>한 번에 끝내세요</em></h1>
+  <p>연봉·세금·부동산·건강·투자까지 — 자주 쓰는 계산기 모음</p>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="계산기 검색... (예: 연봉, 대출, 청약)" oninput="filterItems()">
   </div>
 </header>
 
-<main class="main">
-  <div class="category-grid">
+<div class="grid" id="grid">
 
-    <!-- 💼 직장·급여 -->
-    <div class="cat-box cat-work">
-      <div class="cat-header">
-        <span class="cat-icon">💼</span>
-        <span class="cat-name">직장·급여</span>
-        <span class="cat-count">6</span>
-      </div>
-      <ul class="calc-list">
-        <li><a href="salary.html">
-          연봉 실수령액 계산기
-          <span style="display:flex;align-items:center;gap:5px">
-            <span class="badge badge-hot">인기</span><span class="arrow">→</span>
-          </span>
-        </a></li>
-        <li><a href="retirement.html">퇴직금 계산기<span class="arrow">→</span></a></li>
-        <li><a href="overtime.html">야근수당 계산기<span class="arrow">→</span></a></li>
-        <li><a href="annual-leave.html">연차 계산기<span class="arrow">→</span></a></li>
-        <li><a href="unemployment.html">실업급여 계산기<span class="arrow">→</span></a></li>
-        <li><a href="health.html">건강보험료 계산기<span class="arrow">→</span></a></li>
-      </ul>
+  <!-- 직장·급여 -->
+  <div class="cat-card blue" data-cat>
+    <div class="cat-head">
+      <div class="cat-icon">💼</div>
+      <span class="cat-name">직장·급여</span>
+      <span class="cat-count">6</span>
     </div>
-
-    <!-- 💰 세금 -->
-    <div class="cat-box cat-tax">
-      <div class="cat-header">
-        <span class="cat-icon">💰</span>
-        <span class="cat-name">세금</span>
-        <span class="cat-count">5</span>
-      </div>
-      <ul class="calc-list">
-        <li><a href="tax.html">증여세·상속세 계산기<span class="arrow">→</span></a></li>
-        <li><a href="income-tax.html">종합소득세 계산기<span class="arrow">→</span></a></li>
-        <li><a href="capital-gains.html">양도소득세 계산기<span class="arrow">→</span></a></li>
-        <li><a href="car-tax.html">자동차 취득세 계산기<span class="arrow">→</span></a></li>
-        <li><a href="vat.html">부가세 계산기<span class="arrow">→</span></a></li>
-      </ul>
+    <div class="cat-list">
+      <a class="cat-item" href="salary.html"><span>연봉 실수령액 계산기</span><span class="badge hot">인기</span></a>
+      <a class="cat-item" href="retirement.html"><span>퇴직금 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="overtime.html"><span>야근수당 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="annual-leave.html"><span>연차 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="unemployment.html"><span>실업급여 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="health.html"><span>건강보험료 계산기</span><span class="arrow">→</span></a>
     </div>
-
-    <!-- 🏠 부동산 -->
-    <div class="cat-box cat-realty">
-      <div class="cat-header">
-        <span class="cat-icon">🏠</span>
-        <span class="cat-name">부동산</span>
-        <span class="cat-count">8</span>
-      </div>
-      <ul class="calc-list">
-        <li><a href="loan.html">
-          대출 이자 계산기
-          <span style="display:flex;align-items:center;gap:5px">
-            <span class="badge badge-hot">인기</span><span class="arrow">→</span>
-          </span>
-        </a></li>
-        <li><a href="apartment.html">청약 당첨 가점 계산기<span class="arrow">→</span></a></li>
-        <li><a href="jeonse.html">전월세 전환율 계산기<span class="arrow">→</span></a></li>
-        <li><a href="pyeong.html">평수 계산기<span class="arrow">→</span></a></li>
-        <li><a href="realty-tax.html">주택 취득세 계산기<span class="arrow">→</span></a></li>
-        <li><a href="brokerage.html">부동산 중개수수료 계산기<span class="arrow">→</span></a></li>
-        <li><a href="rent-compare.html">전세 vs 월세 비교 계산기<span class="arrow">→</span></a></li>
-        <li><a href="loan-limit.html">대출 한도(DSR) 계산기<span class="arrow">→</span></a></li>
-      </ul>
-    </div>
-
-    <!-- 📈 투자·재테크 -->
-    <div class="cat-box cat-invest">
-      <div class="cat-header">
-        <span class="cat-icon">📈</span>
-        <span class="cat-name">투자·재테크</span>
-        <span class="cat-count">4</span>
-      </div>
-      <ul class="calc-list">
-        <li><a href="pension.html">국민연금 수령액 계산기<span class="arrow">→</span></a></li>
-        <li><a href="stock.html">주식 수익률 계산기<span class="arrow">→</span></a></li>
-        <li><a href="compound.html">복리 계산기<span class="arrow">→</span></a></li>
-        <li><a href="savings.html">예·적금 이자 계산기<span class="arrow">→</span></a></li>
-      </ul>
-    </div>
-
-    <!-- 🌱 생활·건강 -->
-    <div class="cat-box cat-life">
-      <div class="cat-header">
-        <span class="cat-icon">🌱</span>
-        <span class="cat-name">생활·건강</span>
-        <span class="cat-count">11</span>
-      </div>
-      <ul class="calc-list">
-        <li><a href="age.html">
-          만 나이 계산기
-          <span style="display:flex;align-items:center;gap:5px">
-            <span class="badge badge-hot">인기</span><span class="arrow">→</span>
-          </span>
-        </a></li>
-        <li><a href="bmi.html">BMI 계산기<span class="arrow">→</span></a></li>
-        <li><a href="calorie.html">칼로리 계산기<span class="arrow">→</span></a></li>
-        <li><a href="pregnancy.html">임신 주수 계산기<span class="arrow">→</span></a></li>
-        <li><a href="baby-support.html">출산지원금 계산기<span class="arrow">→</span></a></li>
-        <li><a href="dday.html">D-DAY 계산기<span class="arrow">→</span></a></li>
-        <li><a href="gpa.html">학점 계산기<span class="arrow">→</span></a></li>
-        <li><a href="parental-leave.html">육아휴직 급여 계산기<span class="arrow">→</span></a></li>
-        <li><a href="weekly-pay.html">주휴수당 계산기<span class="arrow">→</span></a></li>
-        <li><a href="exchange.html">환율 계산기<span class="arrow">→</span></a></li>
-        <li><a href="discount.html">할인 계산기<span class="arrow">→</span></a></li>
-      </ul>
-    </div>
-
-    <!-- 🎮 게임 -->
-    <div class="cat-box cat-game">
-      <div class="cat-header">
-        <span class="cat-icon">🎮</span>
-        <span class="cat-name">게임</span>
-        <span class="cat-count">2</span>
-      </div>
-      <ul class="calc-list">
-        <li><a href="stock-game.html">
-          <div>
-            <div class="game-item-name">주식 타이밍 게임</div>
-            <div class="game-item-sub">차트 보고 매수·매도, 5라운드 수익률 도전</div>
-          </div>
-          <span style="display:flex;align-items:center;gap:5px">
-            <span class="badge badge-new">NEW</span><span class="arrow">→</span>
-          </span>
-        </a></li>
-        <li><a href="10억모으기.html">
-          <div>
-            <div class="game-item-name">10억 모으기 시뮬레이션</div>
-            <div class="game-item-sub">적금·ETF·주식으로 최단 기간 10억 달성</div>
-          </div>
-          <span style="display:flex;align-items:center;gap:5px">
-            <span class="badge badge-new">NEW</span><span class="arrow">→</span>
-          </span>
-        </a></li>
-      </ul>
-      <div class="coming-soon">🛠 더 많은 게임 준비 중...</div>
-    </div>
-
   </div>
-</main>
 
-<footer class="site-footer">
-  본 계산기는 간편 계산용으로 실제 금액과 차이가 있을 수 있습니다.<br>
-  <a href="privacy.html" style="margin-top:6px;display:inline-block">개인정보처리방침</a>
+  <!-- 세금 -->
+  <div class="cat-card purple" data-cat>
+    <div class="cat-head">
+      <div class="cat-icon">💰</div>
+      <span class="cat-name">세금</span>
+      <span class="cat-count">5</span>
+    </div>
+    <div class="cat-list">
+      <a class="cat-item" href="tax.html"><span>증여세·상속세 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="income-tax.html"><span>종합소득세 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="capital-gains.html"><span>양도소득세 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="car-tax.html"><span>자동차 취득세 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="vat.html"><span>부가세 계산기</span><span class="arrow">→</span></a>
+    </div>
+  </div>
+
+  <!-- 부동산 -->
+  <div class="cat-card green" data-cat>
+    <div class="cat-head">
+      <div class="cat-icon">🏠</div>
+      <span class="cat-name">부동산</span>
+      <span class="cat-count">8</span>
+    </div>
+    <div class="cat-list">
+      <a class="cat-item" href="loan.html"><span>대출 이자 계산기</span><span class="badge hot">인기</span></a>
+      <a class="cat-item" href="apartment.html"><span>청약 당첨 가점 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="jeonse.html"><span>전월세 전환율 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="pyeong.html"><span>평수 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="house-tax.html"><span>주택 취득세 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="realtor-fee.html"><span>부동산 중개수수료 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="jeonse-compare.html"><span>전세 vs 월세 비교 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="dsr.html"><span>대출 한도(DSR) 계산기</span><span class="arrow">→</span></a>
+    </div>
+  </div>
+
+  <!-- 투자·재테크 -->
+  <div class="cat-card amber" data-cat>
+    <div class="cat-head">
+      <div class="cat-icon">📈</div>
+      <span class="cat-name">투자·재테크</span>
+      <span class="cat-count">4</span>
+    </div>
+    <div class="cat-list">
+      <a class="cat-item" href="pension.html"><span>국민연금 수령액 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="stock.html"><span>주식 수익률 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="compound.html"><span>복리 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="savings.html"><span>예·적금 이자 계산기</span><span class="arrow">→</span></a>
+    </div>
+  </div>
+
+  <!-- 생활·건강 -->
+  <div class="cat-card orange" data-cat>
+    <div class="cat-head">
+      <div class="cat-icon">🌿</div>
+      <span class="cat-name">생활·건강</span>
+      <span class="cat-count">11</span>
+    </div>
+    <div class="cat-list">
+      <a class="cat-item" href="age.html"><span>만 나이 계산기</span><span class="badge hot">인기</span></a>
+      <a class="cat-item" href="bmi.html"><span>BMI 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="calorie.html"><span>칼로리 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="pregnancy.html"><span>임신 주수 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="baby-support.html"><span>출산지원금 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="dday.html"><span>D-DAY 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="gpa.html"><span>학점 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="parental-leave.html"><span>육아휴직 급여 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="weekly-holiday.html"><span>주휴수당 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="exchange.html"><span>환율 계산기</span><span class="arrow">→</span></a>
+      <a class="cat-item" href="discount.html"><span>할인 계산기</span><span class="arrow">→</span></a>
+    </div>
+  </div>
+
+  <!-- 게임 -->
+  <div class="cat-card game" data-cat>
+    <div class="cat-head">
+      <div class="cat-icon">🎮</div>
+      <span class="cat-name">게임</span>
+      <span class="cat-count">2</span>
+    </div>
+    <div class="cat-list">
+      <a class="game-item" href="quiz.html">
+        <div class="game-item-head">
+          <span class="game-item-title">금융 IQ 퀴즈</span>
+          <span class="badge new">NEW</span>
+        </div>
+        <div class="game-item-desc">주식·부동산·세금 상식 20문제 도전</div>
+      </a>
+      <a class="game-item" href="billion-simulator.html">
+        <div class="game-item-head">
+          <span class="game-item-title">10억 모으기 시뮬레이션</span>
+          <span class="badge new">NEW</span>
+        </div>
+        <div class="game-item-desc">적금·ETF·주식으로 최단 기간 10억 달성</div>
+      </a>
+      <div class="coming">✦ 더 많은 게임 준비 중...</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="no-result" id="noResult">검색 결과가 없어요. 다른 키워드로 찾아보세요.</div>
+
+<footer>
+  본 계산기는 간편 계산용으로 실제 금액과 차이가 있을 수 있습니다.
+  <br style="margin-bottom:6px">
+  <a href="privacy.html">개인정보처리방침</a>
 </footer>
 
+<script>
+function filterItems(){
+  const q=document.getElementById('searchInput').value.trim().toLowerCase();
+  const items=document.querySelectorAll('.cat-item, .game-item');
+  const cards=document.querySelectorAll('[data-cat]');
+  if(!q){
+    items.forEach(i=>i.style.display='');
+    cards.forEach(c=>c.style.display='');
+    document.getElementById('noResult').classList.remove('show');
+    return;
+  }
+  let any=false;
+  cards.forEach(card=>{
+    const its=card.querySelectorAll('.cat-item, .game-item');
+    let vis=false;
+    its.forEach(it=>{
+      const txt=it.textContent.toLowerCase();
+      if(txt.includes(q)){it.style.display='';vis=true;any=true;}
+      else it.style.display='none';
+    });
+    card.style.display=vis?'':'none';
+  });
+  document.getElementById('noResult').classList.toggle('show',!any);
+  document.getElementById('grid').style.display=any?'':'none';
+  if(any) document.getElementById('grid').style.display='';
+}
+</script>
 </body>
 </html>
